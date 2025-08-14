@@ -1,0 +1,55 @@
+// file: cmd/docker-lint/main.go
+// (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
+
+	"github.com/asymmetric-effort/docker-lint/internal/engine"
+	"github.com/asymmetric-effort/docker-lint/internal/ir"
+	"github.com/asymmetric-effort/docker-lint/internal/rules"
+)
+
+// main is the CLI entry point.
+func main() {
+	if err := run(os.Args[1:], os.Stdout); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+// run executes the linter for the provided arguments and writes JSON findings.
+func run(args []string, out io.Writer) error {
+	if len(args) < 1 {
+		return fmt.Errorf("usage: docker-lint <Dockerfile>")
+	}
+	f, err := os.Open(args[0])
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	res, err := parser.Parse(f)
+	if err != nil {
+		return err
+	}
+	doc, err := ir.BuildDocument(args[0], res.AST)
+	if err != nil {
+		return err
+	}
+
+	reg := engine.NewRegistry()
+	reg.Register(rules.NewNoLatestTag())
+
+	findings, err := reg.Run(context.Background(), doc)
+	if err != nil {
+		return err
+	}
+	return json.NewEncoder(out).Encode(findings)
+}

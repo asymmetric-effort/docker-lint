@@ -1,0 +1,13 @@
+# Go build artifacts
+/docker-lint
+/bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+coverage.out
+
+# Editor directories
+.idea/
+.vscode/
