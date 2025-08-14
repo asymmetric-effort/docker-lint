@@ -1,0 +1,159 @@
+version: 1
+name: docker-lint build plan
+policies:
+  file_headers:
+    cxx_go_header: |
+      // file: {{.Path}}
+      // (c) 2025 Asymmetric Effort, LLC. <scaldwell@asymmetric-effort.com>
+  coding:
+    require_docstrings: true
+    keep_functionality_on_refactor: true
+  safety:
+    no_network_by_default: true
+    do_not_modify: ["LICENSE", "docs/parity.md"]
+  chunking:
+    max_tokens_per_write: 1200
+    prefer_small_commits: true
+context:
+  include:
+    - cmd/**
+    - internal/**
+    - go.mod
+    - go.sum
+    - .docker-lint.yml
+    - testdata/**
+  exclude:
+    - vendor/**
+    - **/*.bin
+
+# Tasks are small, verifiable, and ordered via dependencies.
+tasks:
+  - id: bootstrap-mod
+    title: Initialize module
+    description: Create go.mod, base layout, minimal main with Cobra.
+    writes:
+      - go.mod
+      - cmd/docker-lint/main.go
+    verify:
+      - cmd: go list ./...
+
+  - id: parser-bridge
+    needs: [bootstrap-mod]
+    title: Parser bridge & IR skeleton
+    description: Implement internal/parser and internal/ir types and BuildDocument().
+    writes:
+      - internal/parser/**
+      - internal/ir/**
+    verify:
+      - cmd: go build ./...
+
+  - id: engine-registry
+    needs: [parser-bridge]
+    title: Rule engine registry + finding type
+    writes:
+      - internal/engine/**
+    verify:
+      - cmd: go test ./internal/engine -run TestRegistry -cover
+
+  - id: rule-dl-nolatest
+    needs: [engine-registry]
+    title: First rule (DL-NoLatestTag) + golden tests
+    writes:
+      - internal/rules/no_latest_tag.go
+      - testdata/golden/dl_nolatest/**
+    verify:
+      - cmd: go test ./... -run TestNoLatestTag -cover
+
+  - id: formatter-json-sarif
+    needs: [engine-registry]
+    title: JSON & SARIF formatters
+    writes:
+      - internal/formatter/**
+    verify:
+      - cmd: go test ./internal/formatter -cover
+
+  - id: ignore-pragmas
+    needs: [parser-bridge]
+    title: Inline ignore parsing (hadolint-compatible)
+    writes:
+      - internal/ignore/**
+    verify:
+      - cmd: go test ./internal/ignore -cover
+
+  - id: extractor
+    needs: [parser-bridge]
+    title: RUN/heredoc script extractor with position maps
+    writes:
+      - internal/extract/**
+    verify:
+      - cmd: go test ./internal/extract -cover
+
+  - id: plugin-api
+    needs: [extractor]
+    title: Plugin API + dispatcher + cache
+    writes:
+      - internal/plugins/api.go
+      - internal/plugins/dispatcher.go
+      - internal/cache/**
+    verify:
+      - cmd: go test ./internal/plugins -run TestDispatcher -cover
+
+  - id: shellcheck-adapter
+    needs: [plugin-api]
+    title: ShellCheck subprocess adapter + sandbox
+    optional: true
+    writes:
+      - internal/plugins/shellcheck/**
+    verify:
+      - cmd: shellcheck -V || true
+      - cmd: go test ./internal/plugins/shellcheck -cover || true
+
+  - id: config-yaml
+    needs: [engine-registry]
+    title: YAML config loader + schema + merging
+    writes:
+      - internal/config/**
+      - .docker-lint.yml (example)
+    verify:
+      - cmd: go test ./internal/config -cover
+
+  - id: outputs-text-json-sarif
+    needs: [formatter-json-sarif, config-yaml]
+    title: Wire outputs & CLI flags
+    writes:
+      - cmd/docker-lint/main.go
+    verify:
+      - cmd: go build ./cmd/docker-lint
+
+  - id: ruleset-parity-phase1
+    needs: [rule-dl-nolatest]
+    title: Implement top-ROI Hadolint rules (batch 1)
+    writes:
+      - internal/rules/**
+    verify:
+      - cmd: go test ./internal/rules -cover
+
+  - id: integration-corpus
+    needs: [outputs-text-json-sarif]
+    title: Integration tests on corpus + coverage gate (>=80%)
+    writes:
+      - test/integration/**
+    verify:
+      - cmd: go test ./... -covermode=atomic -coverpkg=./... -run Integration -coverprofile=coverage.out
+      - cmd: go tool cover -func=coverage.out | awk '/total:/ { if ($3+0 < 80) exit 1 }'
+
+  - id: ci-pipeline
+    needs: [integration-corpus]
+    title: GitHub Actions CI (matrix, coverage gate, releases)
+    writes:
+      - .github/workflows/ci.yml
+    verify:
+      - note: Verified by workflow success.
+
+# Agent guidance for multistep operation
+execution:
+  stop_on_failure: true
+  confirm_after_task: true
+  prefer_diff_patches: true
+  run_tests_often: true
+  summarization_per_task: true
