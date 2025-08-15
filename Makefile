@@ -1,6 +1,6 @@
 # Copyright (c) 2025 Asymmetric Effort, LLC
 
-.PHONY: lint test build tidy clean all
+.PHONY: lint test build tidy clean all bump_version bump_version/major
 
 all: clean lint test build
 
@@ -31,3 +31,11 @@ tidy:
 clean:
 	@rm -rf build &> /dev/null || true
 	@echo 'make clean: ok'
+
+## Increment the minor version and tag the current commit
+bump_version:
+	python3 scripts/bump_version.py minor
+
+## Increment the major version and tag the current commit
+bump_version/major:
+	python3 scripts/bump_version.py major
