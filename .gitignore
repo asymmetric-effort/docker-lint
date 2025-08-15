@@ -12,5 +12,5 @@ coverage.out
 .idea/
 .vscode/
 build/
-
-coverage.out
+dist/
+__pycache__/
