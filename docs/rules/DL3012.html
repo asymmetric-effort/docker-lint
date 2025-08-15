@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3012 : Multiple HEALTHCHECK instructions | docker-lint</title>
+<meta name="description" content="Each build stage may define at most one `HEALTHCHECK`. Additional `HEALTHCHECK` instructions override previous ones and can be confusing.">
+</head>
+<body>
+<h1>DL3012 : Multiple HEALTHCHECK instructions</h1>
+<h2>Description</h2>
+<p>Each build stage may define at most one <code>HEALTHCHECK</code>. Additional <code>HEALTHCHECK</code> instructions override previous ones and can be confusing.</p>
+<h2>Goals</h2>
+<ul>
+<li>Keep Dockerfiles clear about active health checks.</li>
+<li>Prevent accidental masking of earlier <code>HEALTHCHECK</code> instructions.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>Traverse instructions in order.</li>
+<li>Reset a stage-scoped flag whenever a <code>FROM</code> instruction appears.</li>
+<li>Upon encountering a <code>HEALTHCHECK</code>:</li>
+<li>If a <code>HEALTHCHECK</code> has already been seen in the current stage, emit <code>DL3012</code> at that line.</li>
+<li>Otherwise, mark that a <code>HEALTHCHECK</code> has been seen for this stage.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

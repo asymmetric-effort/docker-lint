@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>docker-lint | docker-lint</title>
+<meta name="description" content="![docker-lint icon](docs/img/docker-linter.png)">
+</head>
+<body>
+<p><img alt="docker-lint icon" src="docs/img/docker-linter.png" /></p>
+<h1>docker-lint</h1>
+<p>Docker-lint is a minimal linter for Dockerfiles. It parses a Dockerfile using the BuildKit parser, normalizes stages into an intermediate representation, and evaluates a set of rules to report potential issues.</p>
+<h2>Supported Platforms</h2>
+<p>See <a href="docs/SUPPORTED_PLATFORMS.md">supported platforms</a> for all GOOS/GOARCH combinations.</p>
+<h2>Installation</h2>
+<p><code>bash
+go install github.com/asymmetric-effort/docker-lint/cmd/docker-lint@latest</code></p>
+<h2>Usage</h2>
+<p>Provide one or more paths or glob patterns (supports <code>*</code> and <code>**</code>). Matching files are linted and findings are emitted as a JSON array to standard output.</p>
+<p><code>bash
+docker-lint /path/to/Dockerfile
+docker-lint './**/Dockerfile'</code></p>
+<p>To display the current version:</p>
+<p><code>bash
+docker-lint --version
+docker-lint -version
+docker-lint version</code></p>
+<p>Example output:</p>
+<p><code>json
+[
+  {
+    "rule": "DL3007",
+    "message": "Avoid implicit latest tag",
+    "line": 1
+  }
+]</code></p>
+<h2>Configuration</h2>
+<p>docker-lint reads an optional <code>.docker-lint.yaml</code> from the current working directory. The file uses the same format as
+<code>hadolint</code> and allows global rule ignores and other settings.</p>
+<p><code>yaml
+ignored:
+  - DL3007
+failure-threshold: warning</code></p>
+<p>The above disables rule <code>DL3007</code> and sets the failure threshold to <code>warning</code>.</p>
+<h2>Linting Containers</h2>
+<p>docker-lint is also published as a container image. This allows you to lint Dockerfiles without installing the binary on your host system. Mount your project directory and provide the Dockerfile path inside the container:</p>
+<p><code>bash
+docker run --rm -v "$(pwd):/src" ghcr.io/asymmetric-effort/docker-lint:latest /src/Dockerfile</code></p>
+<h2>Rules</h2>
+<ul>
+<li><a href="docs/rules/DL3050.md">DL3050</a> - Superfluous label(s) present when strict label validation is enabled.</li>
+</ul>
+<h2>Development</h2>
+<p>Common tasks can be run using <a href="Makefile"><code>make</code></a>:</p>
+<p><code>bash
+make clean   # Remove build artifacts
+make lint    # Run static analysis
+make test    # Run unit and integration tests
+make build   # Build the docker-lint binary</code></p>
+<h2>License</h2>
+<p>This project is licensed under the MIT License. See <a href="LICENSE">LICENSE</a> for details.</p>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="docs/img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

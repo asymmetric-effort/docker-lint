@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3037 - Pin versions in zypper install | docker-lint</title>
+<meta name="description" content="`zypper install` commands should pin package versions so the build result is">
+</head>
+<body>
+<h1>DL3037 - Pin versions in zypper install</h1>
+<h2>Description</h2>
+<p><code>zypper install</code> commands should pin package versions so the build result is
+reproducible.</p>
+<h2>Goals</h2>
+<ul>
+<li>Prevent unintentional upgrades during image builds.</li>
+<li>Require explicit version specifications for each installed package.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>Iterate over each <code>RUN</code> instruction and split it into shell command segments.</li>
+<li>For segments that begin with <code>zypper install</code> or <code>zypper in</code>:</li>
+<li>Collect package arguments excluding flags (tokens beginning with <code>-</code>).</li>
+<li>Ensure every package argument contains a version indicator (<code>=</code>, <code>&gt;=</code>, <code>&gt;</code>,
+     <code>&lt;=</code>, <code>&lt;</code>) or ends with <code>.rpm</code>.</li>
+<li>If any package lacks a version specifier, emit <code>DL3037</code> at the line of the
+   <code>RUN</code> instruction with the message <code>Specify version with `zypper install -y &lt;package&gt;=&lt;version&gt;`</code>.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

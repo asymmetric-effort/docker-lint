@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lint Rules | docker-lint</title>
+<meta name="description" content="The following Hadolint-compatible rules are implemented:">
+</head>
+<body>
+<h1>Lint Rules</h1>
+<p>The following Hadolint-compatible rules are implemented:
+- <a href="DL1001.md">DL1001</a> - Avoid inline ignore pragmas
+- <a href="DL3000.md">DL3000</a> - Use absolute WORKDIR
+- <a href="DL3001.md">DL3001</a> - Avoid irrelevant shell commands
+- <a href="DL3002.md">DL3002</a> - Last USER should not be root
+- <a href="DL3003.md">DL3003</a> - Use WORKDIR to switch to a directory
+- <a href="DL3004.md">DL3004</a> - Do not use sudo
+- <a href="DL3006.md">DL3006</a> - Always tag the version of an image explicitly
+- <a href="DL3007.md">DL3007</a> - Avoid latest tag
+- <a href="DL3008.md">DL3008</a> - Pin versions in apt-get install
+- <a href="DL3009.md">DL3009</a> - Delete the APT lists after installing packages
+- <a href="DL3010.md">DL3010</a> - Use ADD for extracting archives into an image
+- <a href="DL3011.md">DL3011</a> - Valid UNIX ports range from 0 to 65535
+- <a href="DL3012.md">DL3012</a> - Multiple HEALTHCHECK instructions
+- <a href="DL3013.md">DL3013</a> - Pin versions in pip
+- <a href="DL3014.md">DL3014</a> - Use the -y switch for apt-get install
+- <a href="DL3015.md">DL3015</a> - Use --no-install-recommends with apt-get
+- <a href="DL3016.md">DL3016</a> - Pin versions in npm
+- <a href="DL3018.md">DL3018</a> - Pin versions in apk add
+- <a href="DL3019.md">DL3019</a> - Use --no-cache with apk add
+- <a href="DL3020.md">DL3020</a> - Use COPY instead of ADD for files and folders
+- <a href="DL3021.md">DL3021</a> - Ensure destination ends with slash when copying multiple sources
+- <a href="DL3022.md">DL3022</a> - COPY --from should reference a previous FROM alias
+- <a href="DL3023.md">DL3023</a> - COPY --from cannot reference its own stage
+- <a href="DL3024.md">DL3024</a> - FROM aliases must be unique
+- <a href="DL3025.md">DL3025</a> - Use JSON notation for CMD and ENTRYPOINT
+- <a href="DL3026.md">DL3026</a> - Restrict registries used in FROM images
+- <a href="DL3027.md">DL3027</a> - Avoid using apt
+- <a href="DL3028.md">DL3028</a> - Pin gem versions
+- <a href="DL3029.md">DL3029</a> - Do not use --platform flag with FROM
+- <a href="DL3030.md">DL3030</a> - Use -y with yum install
+- <a href="DL3032.md">DL3032</a> - Run <code>yum clean all</code>
+- <a href="DL3033.md">DL3033</a> - Pin versions in yum install
+- <a href="DL3034.md">DL3034</a> - Use non-interactive zypper
+- <a href="DL3035.md">DL3035</a> - Avoid <code>zypper dist-upgrade</code>
+- <a href="DL3036.md">DL3036</a> - Clean zypper cache
+- <a href="DL3037.md">DL3037</a> - Pin versions in zypper install
+- <a href="DL3038.md">DL3038</a> - Use -y with dnf install
+- <a href="DL3040.md">DL3040</a> - dnf clean all missing after dnf command
+- <a href="DL3041.md">DL3041</a> - Avoid dnf upgrade or update in Dockerfiles
+- <a href="DL3042.md">DL3042</a> - Combine consecutive RUN instructions that use the same package manager
+- <a href="DL3043.md">DL3043</a> - Specify OS version tag for base images
+- <a href="DL3044.md">DL3044</a> - Specify version with dnf/microdnf install
+- <a href="DL3045.md">DL3045</a> - COPY --from without digest pinning for external image
+- <a href="DL3046.md">DL3046</a> - Avoid apk upgrade in Dockerfiles
+- <a href="DL3047.md">DL3047</a> - Clean apk cache after installing packages
+- <a href="DL3048.md">DL3048</a> - Invalid Label Key
+- <a href="DL3050.md">DL3050</a> - Superfluous label(s) present
+- <a href="DL3051.md">DL3051</a> - Label value is empty
+- <a href="DL3052.md">DL3052</a> - Label is not a valid URL
+- <a href="DL3053.md">DL3053</a> - Label does not conform to RFC3339
+- <a href="DL3054.md">DL3054</a> - Label is not a valid SPDX identifier
+- <a href="DL3055.md">DL3055</a> - Stage image is not pinned by digest
+- <a href="DL3056.md">DL3056</a> - Label does not conform to semantic versioning
+- <a href="DL3057.md">DL3057</a> - <code>HEALTHCHECK</code> instruction missing
+- <a href="DL3058.md">DL3058</a> - Label is not a valid email address
+- <a href="DL3059.md">DL3059</a> - Multiple consecutive <code>RUN</code> instructions
+- <a href="DL3060.md">DL3060</a> - <code>yarn cache clean</code> missing after <code>yarn install</code>
+- <a href="DL3061.md">DL3061</a> - Dockerfile must start with FROM or ARG
+- <a href="DL4000.md">DL4000</a> - MAINTAINER is deprecated
+- <a href="DL4001.md">DL4001</a> - Either use Wget or Curl but not both
+- <a href="DL4003.md">DL4003</a> - Multiple CMD instructions
+- <a href="DL4004.md">DL4004</a> - Multiple ENTRYPOINT instructions
+- <a href="DL4005.md">DL4005</a> - Use SHELL to change the default shell
+- <a href="DL4006.md">DL4006</a> - Set the SHELL option -o pipefail before RUN with a pipe in it</p>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

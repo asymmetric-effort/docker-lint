@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3040 - dnf clean all missing after dnf command | docker-lint</title>
+<meta name="description" content="Prevent leftover `dnf` or `microdnf` metadata from inflating image size.">
+</head>
+<body>
+<h1>DL3040 - dnf clean all missing after dnf command</h1>
+<h2>Purpose</h2>
+<p>Prevent leftover <code>dnf</code> or <code>microdnf</code> metadata from inflating image size.</p>
+<h2>Scope</h2>
+<p>Applies to any <code>RUN</code> instruction invoking <code>dnf</code> or <code>microdnf</code>.</p>
+<h2>Rule Statement (normative)</h2>
+<p>Emit <strong>DL3040</strong> when a <code>RUN</code> instruction performs a modifying <code>dnf</code>/<code>microdnf</code> operation and does not clean the package cache in the same instruction.</p>
+<p><strong>Message:</strong> <code>dnf clean all missing after dnf command.</code></p>
+<h2>Rationale</h2>
+<p>Package managers leave metadata in <code>/var/cache/dnf</code> after install or update operations. Removing it keeps layers small and reproducible.</p>
+<h2>Detection Logic (high-level)</h2>
+<ol>
+<li>Split each <code>RUN</code> command into segments.</li>
+<li>Track the last modifying <code>dnf</code>/<code>microdnf</code> segment (<code>install</code>, <code>upgrade</code>, <code>update</code>, <code>groupinstall</code>, <code>groupupdate</code>, <code>distrosync</code>, <code>autoremove</code>, <code>remove</code>).</li>
+<li>Track cleanup segments that follow (<code>dnf clean all</code>, <code>microdnf clean all</code>, <code>rm -rf /var/cache/dnf</code>, or <code>find /var/cache/dnf -delete</code>).</li>
+<li>Report DL3040 when the last cleanup occurs before the last modifying operation or is absent.</li>
+</ol>
+<h2>Severity</h2>
+<p><code>info</code></p>
+<h2>Examples</h2>
+<h3>Non-compliant</h3>
+<p><code>Dockerfile
+RUN dnf install -y jq</code></p>
+<h3>Compliant</h3>
+<p><code>Dockerfile
+RUN dnf install -y jq &amp;&amp; dnf clean all</code></p>
+<h3>Compliant (rm cleanup)</h3>
+<p><code>Dockerfile
+RUN microdnf install -y jq &amp;&amp; rm -rf /var/cache/dnf</code></p>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

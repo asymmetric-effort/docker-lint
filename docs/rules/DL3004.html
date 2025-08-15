@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3004 : Do not use sudo | docker-lint</title>
+<meta name="description" content="`sudo` in `RUN` instructions leads to unpredictable behavior; use tools like `gosu` instead.">
+</head>
+<body>
+<h1>DL3004 : Do not use sudo</h1>
+<h2>Description</h2>
+<p><code>sudo</code> in <code>RUN</code> instructions leads to unpredictable behavior; use tools like <code>gosu</code> instead.</p>
+<h2>Goals</h2>
+<ul>
+<li>Avoid permission issues caused by <code>sudo</code> inside containers.</li>
+<li>Promote clearer privilege management mechanisms.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>Inspect each <code>RUN</code> instruction.</li>
+<li>Parse the executed commands.</li>
+<li>If any command is <code>sudo</code>, emit <code>DL3004</code> at the instruction line.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

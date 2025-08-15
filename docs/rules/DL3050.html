@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3050 - Superfluous label(s) present | docker-lint</title>
+<meta name="description" content="Ensure images only carry labels defined in the expected schema when strict validation is enabled.">
+</head>
+<body>
+<h1>DL3050 - Superfluous label(s) present</h1>
+<h2>Purpose</h2>
+<p>Ensure images only carry labels defined in the expected schema when strict validation is enabled.</p>
+<h2>Scope</h2>
+<p>Evaluates every <code>LABEL</code> instruction when a label schema is configured and strict mode is active.</p>
+<h2>Rule Statement (normative)</h2>
+<p>Emit <strong>DL3050</strong> when a <code>LABEL</code> instruction includes a key not present in the configured label schema while strict mode is enabled.</p>
+<p><strong>Message:</strong> <code>Superfluous label(s) present.</code></p>
+<h2>Rationale</h2>
+<p>Restricting labels to a known set prevents typos and unauthorized metadata from entering images.</p>
+<h2>Configuration</h2>
+<p>Provide a label schema and enable strict validation. Without strict mode, this rule is silent.</p>
+<h2>Detection Logic (high-level)</h2>
+<ol>
+<li>If strict mode is disabled, no findings are produced.</li>
+<li>For each <code>LABEL</code> instruction, extract key/value pairs.</li>
+<li>Report DL3050 if any key is absent from the schema (one finding per instruction).</li>
+</ol>
+<h2>Severity</h2>
+<p><code>info</code></p>
+<h2>Examples</h2>
+<h3>Non-compliant</h3>
+<p>Schema: <code>{ "org.opencontainers.image.source": string }</code>
+<code>Dockerfile
+LABEL org.opencontainers.image.revision="abcd1234"</code></p>
+<h3>Compliant</h3>
+<p><code>Dockerfile
+LABEL org.opencontainers.image.source="https://github.com/acme/project"</code></p>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

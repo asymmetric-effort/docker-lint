@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3033 - Pin versions in yum install | docker-lint</title>
+<meta name="description" content="`yum install` and `yum module install` commands should specify explicit package">
+</head>
+<body>
+<h1>DL3033 - Pin versions in yum install</h1>
+<h2>Description</h2>
+<p><code>yum install</code> and <code>yum module install</code> commands should specify explicit package
+or module versions to produce deterministic builds.</p>
+<h2>Goals</h2>
+<ul>
+<li>Avoid accidental upgrades when building images.</li>
+<li>Encourage explicit version pinning for every installed package or module.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>Iterate over each <code>RUN</code> instruction in the Dockerfile and split the
+   instruction into shell command segments.</li>
+<li>For every segment starting with <code>yum</code>:</li>
+<li>If the command uses <code>module install</code>, ensure each module argument after
+     <code>install</code> contains a colon (<code>stream:version</code>).</li>
+<li>If the command uses regular <code>install</code>, ensure each package argument after
+     <code>install</code> includes a hyphenated version (<code>pkg-version</code>) or ends with
+     <code>.rpm</code>.</li>
+<li>Ignore flags beginning with <code>-</code> when collecting package names.</li>
+<li>If any package or module lacks a version specification, emit <code>DL3033</code> at the
+   <code>RUN</code> line with the message <code>Specify version with `yum install -y &lt;package&gt;-&lt;version&gt;`</code>.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

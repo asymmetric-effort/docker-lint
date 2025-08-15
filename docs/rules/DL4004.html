@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL4004 - Multiple ENTRYPOINT instructions | docker-lint</title>
+<meta name="description" content="Listing more than one `ENTRYPOINT` instruction in a single stage means only the last takes effect. Remove redundant `ENTRYPOINT` directives to avoid confusion.">
+</head>
+<body>
+<h1>DL4004 - Multiple ENTRYPOINT instructions</h1>
+<h2>Description</h2>
+<p>Listing more than one <code>ENTRYPOINT</code> instruction in a single stage means only the last takes effect. Remove redundant <code>ENTRYPOINT</code> directives to avoid confusion.</p>
+<h2>Goals</h2>
+<ul>
+<li>Ensure each stage defines a single entrypoint.</li>
+<li>Avoid accidental overriding of earlier <code>ENTRYPOINT</code> instructions.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>Track whether an <code>ENTRYPOINT</code> has been seen in the current stage.</li>
+<li>Reset the tracker whenever a <code>FROM</code> instruction appears.</li>
+<li>On encountering an <code>ENTRYPOINT</code>:</li>
+<li>If one has already been seen, emit <code>DL4004</code> for that line.</li>
+<li>Otherwise record that an <code>ENTRYPOINT</code> exists.</li>
+<li>Use the message <code>Multiple ENTRYPOINT instructions found. If you list more than one ENTRYPOINT then only the last ENTRYPOINT will take effect</code>.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

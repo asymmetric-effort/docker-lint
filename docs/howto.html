@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How To Use docker-lint | docker-lint</title>
+<meta name="description" content="```bash">
+</head>
+<body>
+<h1>How To Use docker-lint</h1>
+<h2>Installation</h2>
+<p><code>bash
+go install github.com/asymmetric-effort/docker-lint/cmd/docker-lint@latest</code></p>
+<h2>Usage</h2>
+<p>Provide one or more paths or glob patterns (supports <code>*</code> and <code>**</code>). Matching files are linted and findings are emitted as a JSON array to standard output.</p>
+<p><code>bash
+docker-lint /path/to/Dockerfile
+docker-lint './**/Dockerfile'</code></p>
+<p>To display the current version:</p>
+<p><code>bash
+docker-lint --version
+docker-lint -version
+docker-lint version</code></p>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

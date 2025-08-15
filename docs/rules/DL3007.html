@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3007 : Avoid latest tag | docker-lint</title>
+<meta name="description" content="`FROM` instructions should specify a version or digest instead of relying on the implicit or `latest` tag. Pinning image versions ensures reproducible builds.">
+</head>
+<body>
+<h1>DL3007 : Avoid latest tag</h1>
+<h2>Description</h2>
+<p><code>FROM</code> instructions should specify a version or digest instead of relying on the implicit or <code>latest</code> tag. Pinning image versions ensures reproducible builds.</p>
+<h2>Goals</h2>
+<ul>
+<li>Promote reproducible builds by avoiding floating <code>latest</code> tags.</li>
+<li>Encourage explicit version pinning for base images.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>For each stage's base image in <code>FROM</code>, ignore images with a digest (<code>@</code>).</li>
+<li>Split the image reference on <code>:</code>.</li>
+<li>If no tag is present or the tag equals <code>latest</code>, emit <code>DL3007</code> at the <code>FROM</code> line.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DL3006 : Always tag the version of an image explicitly | docker-lint</title>
+<meta name="description" content="Specify an explicit tag or digest for images in `FROM` instructions. Untagged images can lead to unpredictable builds.">
+</head>
+<body>
+<h1>DL3006 : Always tag the version of an image explicitly</h1>
+<h2>Description</h2>
+<p>Specify an explicit tag or digest for images in <code>FROM</code> instructions. Untagged images can lead to unpredictable builds.</p>
+<h2>Goals</h2>
+<ul>
+<li>Ensure deterministic builds by pinning base image versions.</li>
+<li>Avoid unintended image updates due to unpinned tags.</li>
+</ul>
+<h2>Specification</h2>
+<ol>
+<li>For each build stage, examine the base image in its <code>FROM</code> instruction.</li>
+<li>If the image is an alias to a previous stage, <code>scratch</code>, or starts with a variable (<code>$</code>), skip the check.</li>
+<li>If the image contains a digest using <code>@</code>, the check passes.</li>
+<li>Otherwise, split the image on <code>:</code>. If no tag is present, emit <code>DL3006</code> at the <code>FROM</code> line.</li>
+</ol>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>

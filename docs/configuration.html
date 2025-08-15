@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Configuration | docker-lint</title>
+<meta name="description" content="Docker-lint accepts configuration files in the same format as [hadolint](https://github.com/hadolint/hadolint). Place a">
+</head>
+<body>
+<h1>Configuration</h1>
+<p>Docker-lint accepts configuration files in the same format as <a href="https://github.com/hadolint/hadolint">hadolint</a>. Place a
+<code>.docker-lint.yaml</code> file in the project root to adjust rule behavior.</p>
+<h2>Example</h2>
+<p><code>yaml
+ignored:
+  - DL3006
+  - DL3008
+  - DL3026
+  - DL3050
+  - SC3050
+  - SC3020
+override:
+  warning:
+    - SC1099
+failure-threshold: warning
+trustedRegistries:
+  - ghcr.io
+strict-labels: true
+label-schema:
+  author: text
+  base-image: text
+  contact: text
+  created: text
+  documentation: text
+  git-commit: text
+  license: text
+  version: text</code></p>
+<p>See the <a href="https://github.com/hadolint/hadolint#configure">hadolint documentation</a> for the meaning of these fields. Docker-lint
+currently honours the <code>ignored</code> list and parses the remaining fields for forward compatibility.</p>
+<p>(c) 2025 Asymmetric Effort, LLC. <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;">&#115;&#99;&#97;&#108;&#100;&#119;&#101;&#108;&#108;&#64;&#97;&#115;&#121;&#109;&#109;&#101;&#116;&#114;&#105;&#99;&#45;&#101;&#102;&#102;&#111;&#114;&#116;&#46;&#99;&#111;&#109;</a>
+<a href="https://asymmetric-effort.com/"><img src="img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60"></a></p>
+</body>
+</html>
