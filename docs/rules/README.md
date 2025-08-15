@@ -31,6 +31,7 @@ The following Hadolint-compatible rules are implemented:
 
 - [DL3046](DL3046.md) - Avoid apk upgrade in Dockerfiles.
 - [DL3047](DL3047.md) - Clean apk cache after installing packages.
+- [DL3048](DL3048.md) - Invalid Label Key
 
 
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
