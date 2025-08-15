@@ -33,7 +33,12 @@ func run(args []string, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		}
+	}(f)
 
 	res, err := parser.Parse(f)
 	if err != nil {
