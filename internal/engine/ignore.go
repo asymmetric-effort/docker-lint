@@ -11,6 +11,8 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
+const ignoreDirective = "hadolint ignore="
+
 // lineIgnores returns rule IDs to skip keyed by line number.
 //
 // lineIgnores scans the document's AST for `hadolint ignore=` pragmas and
@@ -45,13 +47,14 @@ func addIgnores(m map[int]map[string]struct{}, line int, ids []string) {
 	}
 }
 
-// parseIgnorePragma extracts rule IDs from a comment or instruction.
+// parseIgnorePragma extracts rule IDs from a comment or instruction, case-insensitively.
 func parseIgnorePragma(s string) []string {
-	idx := strings.Index(strings.ToLower(s), "hadolint ignore=")
+	lower := strings.ToLower(s)
+	idx := strings.Index(lower, ignoreDirective)
 	if idx == -1 {
 		return nil
 	}
-	rest := s[idx+len("hadolint ignore="):]
+	rest := lower[idx+len(ignoreDirective):]
 	rest = strings.TrimSpace(rest)
 	fields := strings.FieldsFunc(rest, func(r rune) bool { return r == ',' || r == ' ' || r == '\t' })
 	var ids []string
