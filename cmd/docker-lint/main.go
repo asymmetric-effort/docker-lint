@@ -54,6 +54,7 @@ func run(args []string, out io.Writer) error {
 	reg.Register(rules.NewAptPin())
 	reg.Register(rules.NewAptListsCleanup())
 	reg.Register(rules.NewDnfNoUpgrade())
+	reg.Register(rules.NewDnfCacheCleanup())
 
 	ctx := context.Background()
 	var all []engine.Finding
