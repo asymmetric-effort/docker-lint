@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2025 Asymmetric Effort, LLC.
+ * Licensed under the MIT License.
+ */
+:root{
+  --bg: #ffffff;
+  --fg: #1c1c1c;
+  --muted: #6b7280;
+  --brand: #0b72e7;
+  --border: #e5e7eb;
+  --banner-h: 100px;
+  --radius: 10px;
+  --space: 12px;
+}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;}
+.container{max-width:1200px;margin:0 auto;padding:0 16px;}
+#banner{display:flex;flex-direction:column;border-bottom:1px solid var(--border);}
+#banner .banner-inner{display:flex;align-items:center;gap:12px;height:var(--banner-h);}
+#banner .brand-mark{height:64px;width:auto;}
+#banner .site-title{margin:0;font-size:28px;}
+.top-nav{display:flex;gap:20px;padding:8px 0;border-top:1px solid var(--border);}
+.top-nav .nav-item{padding:6px 10px;border-radius:8px;text-decoration:none;color:var(--fg);transition:background-color .12s ease, box-shadow .12s ease;}
+.top-nav .nav-item:hover{background:color-mix(in srgb, var(--brand) 12%, transparent);box-shadow:0 0 0 1px color-mix(in srgb, var(--brand) 35%, transparent) inset;}
+.top-nav .nav-item:focus-visible{outline:none;background:color-mix(in srgb, var(--brand) 18%, transparent);box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 55%, transparent) inset;}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:16px;padding:16px 0;}
+.navigator{display:flex;flex-direction:column;min-height:60vh;border:1px solid var(--border);border-radius:var(--radius);}
+.nav-header{padding:8px;border-bottom:1px solid var(--border);}
+.nav-logo{height:32px;width:auto;}
+.content-navigator{list-style:none;margin:0;padding:8px;overflow:auto;max-height:calc(80vh - 120px);}
+.content-navigator .nav-link{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:var(--fg);transition:background-color .12s ease, box-shadow .12s ease;}
+.content-navigator .nav-link:hover{background:color-mix(in srgb, var(--brand) 12%, transparent);box-shadow:0 0 0 1px color-mix(in srgb, var(--brand) 35%, transparent) inset;}
+.content-navigator .nav-link:focus-visible{outline:none;background:color-mix(in srgb, var(--brand) 18%, transparent);box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 55%, transparent) inset;}
+.nav-footer{margin-top:auto;padding:8px;border-top:1px solid var(--border);display:flex;justify-content:center;}
+.ae-logo{height:32px;width:auto;opacity:.9;}
+.content-pane{min-height:60vh;border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.prose h1,.prose h2,.prose h3{line-height:1.2}
+.footer{padding:16px 0;border-top:1px solid var(--border);color:var(--muted);}
+@media (max-width: 900px){
+  .layout{grid-template-columns:1fr;}
+  #banner .site-title{font-size:22px;}
+}
