@@ -14,7 +14,7 @@ The following Hadolint-compatible rules are implemented:
 - [DL3014](DL3014.md) - Use the -y switch for apt-get install.
 - [DL3015](DL3015.md) - Require `--no-install-recommends` with apt-get install.
 - [DL3018](DL3018.md) - Pin versions in apk add.
-
+- [DL3019](DL3019.md) - Use --no-cache with apk add.
 - [DL3021](DL3021.md) - COPY with more than 2 arguments requires the last argument to end with /.
 - [DL4000](DL4000.md) - `MAINTAINER` is deprecated. Use `LABEL maintainer` instead.
 
