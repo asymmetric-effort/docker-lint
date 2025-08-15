@@ -18,10 +18,11 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 	"github.com/asymmetric-effort/docker-lint/internal/rules"
+	"github.com/asymmetric-effort/docker-lint/internal/version"
 )
 
 // usageText describes the command line usage for the application.
-const usageText = "usage: docker-lint [-c file] <Dockerfile>"
+const usageText = "usage: docker-lint [--version] [-c file] <Dockerfile>"
 
 // printUsage writes the CLI usage information to the provided writer.
 func printUsage(out io.Writer) {
@@ -48,7 +49,7 @@ func main() {
 // run executes the linter for the provided arguments and writes JSON findings.
 //
 // In addition to the JSON output, run emits a human-readable summary to errOut.
-// When color is true, the summary uses ANSI colors.
+// When color is true, the summary uses ANSI colors. If args contain a version flag, run prints the application version to out and exits.
 func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	var (
 		files      []string
@@ -57,6 +58,9 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	for i := 0; i < len(args); i++ {
 		a := args[i]
 		switch a {
+		case "version", "-version", "--version":
+			fmt.Fprintln(out, version.Current)
+			return nil
 		case "-h", "--help":
 			printUsage(out)
 			return nil
