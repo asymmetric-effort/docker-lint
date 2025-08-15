@@ -21,6 +21,7 @@ The following Hadolint-compatible rules are implemented:
 - [DL3020](DL3020.md) - Use COPY instead of ADD for files and folders.
 - [DL3021](DL3021.md) - COPY with more than 2 arguments requires the last argument to end with /.
 
+- [DL3040](DL3040.md) - dnf clean all missing after dnf command.
 
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 
