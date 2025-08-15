@@ -9,9 +9,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/google/shlex"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
-
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
@@ -35,7 +32,7 @@ func (pinNpmVersion) Check(ctx context.Context, d *ir.Document) ([]engine.Findin
 		if !strings.EqualFold(n.Value, "run") {
 			continue
 		}
-		segments := splitRunSegmentsNpm(n)
+		segments := splitRunSegments(n)
 		for _, seg := range segments {
 			if len(seg) == 0 {
 				continue
