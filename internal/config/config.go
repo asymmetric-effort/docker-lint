@@ -5,7 +5,6 @@ package config
 import (
 	"gopkg.in/yaml.v3"
 	"os"
-	"path/filepath"
 )
 
 // Config represents docker-lint configuration settings.
