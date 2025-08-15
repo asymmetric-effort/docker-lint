@@ -180,3 +180,104 @@ func TestIntegrationRunDoubleStar(t *testing.T) {
 		t.Fatalf("expected 4 findings, got %d", len(findings))
 	}
 }
+
+// TestIntegrationRunDefaultConfigExclusions verifies that .docker-lint.yaml exclusions are applied.
+func TestIntegrationRunDefaultConfigExclusions(t *testing.T) {
+	tmp := t.TempDir()
+	// write Dockerfile
+	src := testDataPath("Dockerfile.bad")
+	df := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read dockerfile: %v", err)
+	}
+	if err := os.WriteFile(df, b, 0o644); err != nil {
+		t.Fatalf("write dockerfile: %v", err)
+	}
+	// write config
+	cfg := []byte("exclusions:\n  - DL3007\n")
+	if err := os.WriteFile(filepath.Join(tmp, ".docker-lint.yaml"), cfg, 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	t.Chdir(tmp)
+	var out bytes.Buffer
+	if err := run([]string{"Dockerfile.bad"}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
+		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
+	}
+}
+
+// TestIntegrationRunConfigFlagShort verifies that -c config flag applies exclusions.
+func TestIntegrationRunConfigFlagShort(t *testing.T) {
+	tmp := t.TempDir()
+	src := testDataPath("Dockerfile.bad")
+	df := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read dockerfile: %v", err)
+	}
+	if err := os.WriteFile(df, b, 0o644); err != nil {
+		t.Fatalf("write dockerfile: %v", err)
+	}
+	cfgPath := filepath.Join(tmp, "cfg.yaml")
+	cfg := []byte("exclusions:\n  - DL3007\n")
+	if err := os.WriteFile(cfgPath, cfg, 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	var out bytes.Buffer
+	if err := run([]string{"-c", cfgPath, df}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
+		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
+	}
+}
+
+// TestIntegrationRunConfigFlagLong verifies that --config flag applies exclusions.
+func TestIntegrationRunConfigFlagLong(t *testing.T) {
+	tmp := t.TempDir()
+	src := testDataPath("Dockerfile.bad")
+	df := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read dockerfile: %v", err)
+	}
+	if err := os.WriteFile(df, b, 0o644); err != nil {
+		t.Fatalf("write dockerfile: %v", err)
+	}
+	cfgPath := filepath.Join(tmp, "cfg.yaml")
+	cfg := []byte("exclusions:\n  - DL3007\n")
+	if err := os.WriteFile(cfgPath, cfg, 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	var out bytes.Buffer
+	if err := run([]string{"--config", cfgPath, df}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
+		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
+	}
+}

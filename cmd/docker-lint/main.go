@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -13,13 +14,14 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/sam-caldwell/ansi"
 
+	"github.com/asymmetric-effort/docker-lint/internal/config"
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 	"github.com/asymmetric-effort/docker-lint/internal/rules"
 )
 
 // usageText describes the command line usage for the application.
-const usageText = "usage: docker-lint <Dockerfile>"
+const usageText = "usage: docker-lint [-c file] <Dockerfile>"
 
 // printUsage writes the CLI usage information to the provided writer.
 func printUsage(out io.Writer) {
@@ -48,27 +50,56 @@ func main() {
 // In addition to the JSON output, run emits a human-readable summary to errOut.
 // When color is true, the summary uses ANSI colors.
 func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
-	if len(args) < 1 {
+	var (
+		files      []string
+		configPath string
+	)
+	for i := 0; i < len(args); i++ {
+		a := args[i]
+		switch a {
+		case "-h", "--help":
+			printUsage(out)
+			return nil
+		case "-c", "--config":
+			if i+1 >= len(args) {
+				return fmt.Errorf("missing config file after %s", a)
+			}
+			configPath = args[i+1]
+			i++
+		default:
+			files = append(files, a)
+		}
+	}
+	if len(files) == 0 {
 		return fmt.Errorf(usageText)
 	}
-	if args[0] == "-h" || args[0] == "--help" {
-		printUsage(out)
-		return nil
+
+	var cfg config.Config
+	if configPath != "" {
+		c, err := config.Load(configPath)
+		if err != nil {
+			return err
+		}
+		cfg = *c
+	} else {
+		if _, err := os.Stat(".docker-lint.yaml"); err == nil {
+			c, err := config.Load(".docker-lint.yaml")
+			if err != nil {
+				return err
+			}
+			cfg = *c
+		} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
 	}
 
-	files, err := expandPaths(args)
+	files, err := expandPaths(files)
 	if err != nil {
 		return err
 	}
 
 	reg := engine.NewRegistry()
-	reg.Register(rules.NewNoLatestTag())
-	reg.Register(rules.NewRequireOSVersionTag())
-	reg.Register(rules.NewAptNoInstallRecommends())
-	reg.Register(rules.NewAptPin())
-	reg.Register(rules.NewAptListsCleanup())
-	reg.Register(rules.NewDnfNoUpgrade())
-	reg.Register(rules.NewDnfCacheCleanup())
+	registerRules(reg, cfg.Exclusions)
 
 	ctx := context.Background()
 	var all []engine.Finding
@@ -84,6 +115,29 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	}
 	printFindings(errOut, all, color)
 	return nil
+}
+
+// registerRules adds built-in rules to reg, skipping any whose IDs appear in exclusions.
+func registerRules(reg *engine.Registry, exclusions []string) {
+	skip := map[string]struct{}{}
+	for _, id := range exclusions {
+		skip[id] = struct{}{}
+	}
+	all := []engine.Rule{
+		rules.NewNoLatestTag(),
+		rules.NewRequireOSVersionTag(),
+		rules.NewAptNoInstallRecommends(),
+		rules.NewAptPin(),
+		rules.NewAptListsCleanup(),
+		rules.NewDnfNoUpgrade(),
+		rules.NewDnfCacheCleanup(),
+	}
+	for _, r := range all {
+		if _, ok := skip[r.ID()]; ok {
+			continue
+		}
+		reg.Register(r)
+	}
 }
 
 // printFindings writes a human-readable summary of findings to errOut.
