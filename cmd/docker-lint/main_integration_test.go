@@ -181,8 +181,8 @@ func TestIntegrationRunDoubleStar(t *testing.T) {
 	}
 }
 
-// TestIntegrationRunDefaultConfigExclusions verifies that .docker-lint.yaml exclusions are applied.
-func TestIntegrationRunDefaultConfigExclusions(t *testing.T) {
+// TestIntegrationRunDefaultConfigIgnored verifies that .docker-lint.yaml ignored rules are applied.
+func TestIntegrationRunDefaultConfigIgnored(t *testing.T) {
 	tmp := t.TempDir()
 	// write Dockerfile
 	src := testDataPath("Dockerfile.bad")
@@ -195,7 +195,7 @@ func TestIntegrationRunDefaultConfigExclusions(t *testing.T) {
 		t.Fatalf("write dockerfile: %v", err)
 	}
 	// write config
-	cfg := []byte("exclusions:\n  - DL3007\n")
+	cfg := []byte("ignored:\n  - DL3007\n")
 	if err := os.WriteFile(filepath.Join(tmp, ".docker-lint.yaml"), cfg, 0o644); err != nil {
 		t.Fatalf("write config: %v", err)
 	}
@@ -216,7 +216,7 @@ func TestIntegrationRunDefaultConfigExclusions(t *testing.T) {
 	}
 }
 
-// TestIntegrationRunConfigFlagShort verifies that -c config flag applies exclusions.
+// TestIntegrationRunConfigFlagShort verifies that -c config flag applies ignored rules.
 func TestIntegrationRunConfigFlagShort(t *testing.T) {
 	tmp := t.TempDir()
 	src := testDataPath("Dockerfile.bad")
@@ -229,7 +229,7 @@ func TestIntegrationRunConfigFlagShort(t *testing.T) {
 		t.Fatalf("write dockerfile: %v", err)
 	}
 	cfgPath := filepath.Join(tmp, "cfg.yaml")
-	cfg := []byte("exclusions:\n  - DL3007\n")
+	cfg := []byte("ignored:\n  - DL3007\n")
 	if err := os.WriteFile(cfgPath, cfg, 0o644); err != nil {
 		t.Fatalf("write config: %v", err)
 	}
@@ -249,7 +249,7 @@ func TestIntegrationRunConfigFlagShort(t *testing.T) {
 	}
 }
 
-// TestIntegrationRunConfigFlagLong verifies that --config flag applies exclusions.
+// TestIntegrationRunConfigFlagLong verifies that --config flag applies ignored rules.
 func TestIntegrationRunConfigFlagLong(t *testing.T) {
 	tmp := t.TempDir()
 	src := testDataPath("Dockerfile.bad")
@@ -262,7 +262,7 @@ func TestIntegrationRunConfigFlagLong(t *testing.T) {
 		t.Fatalf("write dockerfile: %v", err)
 	}
 	cfgPath := filepath.Join(tmp, "cfg.yaml")
-	cfg := []byte("exclusions:\n  - DL3007\n")
+	cfg := []byte("ignored:\n  - DL3007\n")
 	if err := os.WriteFile(cfgPath, cfg, 0o644); err != nil {
 		t.Fatalf("write config: %v", err)
 	}
