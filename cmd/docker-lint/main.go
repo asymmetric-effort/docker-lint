@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 
 	doublestar "github.com/bmatcuk/doublestar/v4"
@@ -75,20 +74,20 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 		return fmt.Errorf(usageText)
 	}
 
-	var cfg config.Config
+	var cfg *config.Config
 	if configPath != "" {
 		c, err := config.Load(configPath)
 		if err != nil {
 			return err
 		}
-		cfg = *c
+		cfg = c
 	} else {
 		if _, err := os.Stat(".docker-lint.yaml"); err == nil {
 			c, err := config.Load(".docker-lint.yaml")
 			if err != nil {
 				return err
 			}
-			cfg = *c
+			cfg = c
 		} else if err != nil && !errors.Is(err, os.ErrNotExist) {
 			return err
 		}
@@ -98,13 +97,13 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	if err != nil {
 		return err
 	}
-	cfg, err := config.Load(".docker-lint.yaml")
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return err
-	}
 
 	reg := engine.NewRegistry()
-	registerRules(reg, cfg.Exclusions)
+	var ignored []string
+	if cfg != nil {
+		ignored = cfg.Ignored
+	}
+	registerRules(reg, ignored)
 
 	ctx := context.Background()
 	var all []engine.Finding
@@ -114,7 +113,7 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 			return err
 		}
 		for _, f := range fnds {
-			if cfg != nil && cfg.IsRuleExcluded(path, f.RuleID) {
+			if cfg != nil && cfg.IsIgnored(f.RuleID) {
 				continue
 			}
 			all = append(all, f)
@@ -127,10 +126,10 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	return nil
 }
 
-// registerRules adds built-in rules to reg, skipping any whose IDs appear in exclusions.
-func registerRules(reg *engine.Registry, exclusions []string) {
+// registerRules adds built-in rules to reg, skipping any whose IDs appear in ignored.
+func registerRules(reg *engine.Registry, ignored []string) {
 	skip := map[string]struct{}{}
-	for _, id := range exclusions {
+	for _, id := range ignored {
 		skip[id] = struct{}{}
 	}
 	all := []engine.Rule{

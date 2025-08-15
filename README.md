@@ -31,15 +31,16 @@ Example output:
 
 ## Configuration
 
-docker-lint reads an optional `.docker-lint.yaml` from the current working directory to configure file-based rule exclusions.
+docker-lint reads an optional `.docker-lint.yaml` from the current working directory. The file uses the same format as
+`hadolint` and allows global rule ignores and other settings.
 
 ```yaml
-exclude:
-  Dockerfile.dev:
-    - DL3007
+ignored:
+  - DL3007
+failure-threshold: warning
 ```
 
-The above disables rule `DL3007` for `Dockerfile.dev`.
+The above disables rule `DL3007` and sets the failure threshold to `warning`.
 
 ## Linting Containers
 
