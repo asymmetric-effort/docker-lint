@@ -3,16 +3,18 @@
 package config
 
 import (
+	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
-	"gopkg.in/yaml.v3"
 )
 
 // Config represents docker-lint configuration settings.
 //
-// Exclusions lists rule IDs that should be skipped during linting.
+// Exclusions lists rule IDs that should be skipped globally during linting.
+// Exclude maps filenames to rule IDs that should be skipped for specific files.
 type Config struct {
-	Exclusions []string `yaml:"exclusions"`
+	Exclusions []string            `yaml:"exclusions"`
+	Exclude    map[string][]string `yaml:"exclude"`
 }
 
 // Load reads the configuration from the given YAML file path.
