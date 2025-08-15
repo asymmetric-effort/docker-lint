@@ -4,7 +4,7 @@
  */
 import {JSDOM} from 'jsdom';
 import assert from 'node:assert/strict';
-import {setBusy, load} from '../website/js/app.js';
+import {setBusy, load} from '../js/app.js';
 
 const dom = new JSDOM(`<section id="content"></section><article id="content-article"></article>`, {url: 'http://localhost'});
 const {document} = dom.window;
