@@ -1,0 +1,36 @@
+# file: .github/workflows/packages.yml
+# (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
+name: packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Run tests
+        run: go test ./...
+      - name: Import GPG signing keys
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_SIGNING_KEY_CI_PRIVATE }}
+          GPG_PUBLIC_KEY: ${{ secrets.GPG_SIGNING_KEY_CI_PUBLIC }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "$GPG_PUBLIC_KEY" | gpg --batch --import
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
