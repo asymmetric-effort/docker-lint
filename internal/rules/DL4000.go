@@ -1,4 +1,4 @@
-// file: internal/rules/deprecated_maintainer.go
+// file: internal/rules/DL4000.go
 // (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
 package rules
 

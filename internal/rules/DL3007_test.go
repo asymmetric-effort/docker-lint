@@ -1,4 +1,4 @@
-// file: internal/rules/no_latest_tag_test.go
+// file: internal/rules/DL3007_test.go
 // (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
 package rules
 
