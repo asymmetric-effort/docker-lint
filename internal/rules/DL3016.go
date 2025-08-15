@@ -9,6 +9,9 @@ import (
 	"context"
 	"strings"
 
+	"github.com/google/shlex"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
+
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )

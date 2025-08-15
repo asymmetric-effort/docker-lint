@@ -22,6 +22,7 @@ The following Hadolint-compatible rules are implemented:
 - [DL3021](DL3021.md) - COPY with more than 2 arguments requires the last argument to end with /.
 
 
+- [DL3041](DL3041.md) - Avoid dnf upgrade or update in Dockerfiles.
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 
 
