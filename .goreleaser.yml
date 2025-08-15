@@ -1,0 +1,63 @@
+version: 2
+project_name: docker-lint
+
+builds:
+  - id: linux
+    main: ./cmd/docker-lint
+    goos: [linux]
+    goarch: [amd64, arm64]
+    env: [CGO_ENABLED=0]
+  - id: darwin
+    main: ./cmd/docker-lint
+    goos: [darwin]
+    goarch: [amd64, arm64]
+    env: [CGO_ENABLED=0]
+  - id: windows
+    main: ./cmd/docker-lint
+    goos: [windows]
+    goarch: [amd64, arm64]
+    env: [CGO_ENABLED=0]
+
+archives:
+  - id: unix
+    builds: [linux, darwin]
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - id: win
+    builds: [windows]
+    format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+nfpms:
+  - id: linux
+    package_name: docker-lint
+    builds: [linux]
+    formats: [deb, rpm]
+    file_name_template: "{{ .PackageName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    maintainer: Asymmetric Effort LLC <dev@asymmetric-effort.com>
+    description: Dockerfile linter
+    license: MIT
+
+brews:
+  - name: docker-lint
+    repository:
+      owner: asymmetric-effort
+      name: homebrew-tap
+    ids: [linux, darwin]
+    description: Dockerfile linter
+    homepage: https://github.com/asymmetric-effort/docker-lint
+    install: |
+      bin.install "docker-lint"
+    test: |
+      system "#{bin}/docker-lint", "--version"
+
+chocolateys:
+  - name: docker-lint
+    title: Docker Lint
+    summary: Dockerfile linter
+    description: Dockerfile linter for Windows
+    tags: docker lint
+    authors: Asymmetric Effort LLC
+    project_url: https://github.com/asymmetric-effort/docker-lint
+    license_url: https://github.com/asymmetric-effort/docker-lint/blob/main/LICENSE
+    ids: [windows]
