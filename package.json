@@ -1,0 +1,11 @@
+{
+  "name": "docker-lint-web",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/app.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}
