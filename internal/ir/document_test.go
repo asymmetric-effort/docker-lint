@@ -9,7 +9,8 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 )
 
-func TestBuildDocument(t *testing.T) {
+// TestIntegrationBuildDocument verifies basic document construction.
+func TestIntegrationBuildDocument(t *testing.T) {
 	src := "FROM alpine:3.19 AS base\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -28,8 +29,8 @@ func TestBuildDocument(t *testing.T) {
 	}
 }
 
-// TestBuildDocumentRetainsAST verifies the original AST is stored.
-func TestBuildDocumentRetainsAST(t *testing.T) {
+// TestIntegrationBuildDocumentRetainsAST verifies the original AST is stored.
+func TestIntegrationBuildDocumentRetainsAST(t *testing.T) {
 	src := "FROM scratch\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -47,8 +48,8 @@ func TestBuildDocumentRetainsAST(t *testing.T) {
 	}
 }
 
-// TestBuildDocumentMultipleStages ensures indexing across multiple FROMs.
-func TestBuildDocumentMultipleStages(t *testing.T) {
+// TestIntegrationBuildDocumentMultipleStages ensures indexing across multiple FROMs.
+func TestIntegrationBuildDocumentMultipleStages(t *testing.T) {
 	src := "FROM alpine AS base\nFROM scratch\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
