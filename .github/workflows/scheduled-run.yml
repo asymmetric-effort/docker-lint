@@ -1,6 +1,6 @@
-# file: .github/workflows/check_gpg_keys.yml
+# file: .github/workflows/scheduled-run.yml
 # (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
-name: Verify CI GPG keys
+name: Scheduled Maintenance
 
 on:
   schedule:
@@ -23,3 +23,15 @@ jobs:
           GPG_SIGNING_KEY_CI_PRIVATE: ${{ secrets.GPG_SIGNING_KEY_CI_PRIVATE }}
           GPG_SIGNING_KEY_CI_PUBLIC: ${{ secrets.GPG_SIGNING_KEY_CI_PUBLIC }}
         run: python3 scripts/check_gpg_keys.py
+
+  trigger-codeql:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger CodeQL workflow
+        uses: peter-evans/workflow-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          workflow: codeql.yml
+          ref: ${{ github.ref }}
