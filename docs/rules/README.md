@@ -11,4 +11,5 @@ The following Hadolint-compatible rules are implemented:
 - [DL3009](DL3009.md) - Delete the APT lists after installing packages.
 - [DL3010](DL3010.md) - Use ADD for extracting archives into an image.
 - [DL3014](DL3014.md) - Use the -y switch for apt-get install.
+- [DL3018](DL3018.md) - Pin versions in apk add.
 - [DL4000](DL4000.md) - `MAINTAINER` is deprecated. Use `LABEL maintainer` instead.
