@@ -2,7 +2,10 @@ module github.com/asymmetric-effort/docker-lint
 
 go 1.24
 
-require github.com/moby/buildkit v0.23.2
+require (
+	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
+	github.com/moby/buildkit v0.23.2
+)
 
 require (
 	github.com/containerd/typeurl/v2 v2.2.3 // indirect
