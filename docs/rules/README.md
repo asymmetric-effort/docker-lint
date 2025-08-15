@@ -1,45 +1,67 @@
 # Lint Rules
 
 The following Hadolint-compatible rules are implemented:
-
-- [DL1001](DL1001.md) - Avoid inline ignore pragmas.
-
-- [DL3000](DL3000.md) - Use absolute WORKDIR.
-- [DL3001](DL3001.md) - Avoid irrelevant shell commands like `ssh` or `vim`.
-- [DL3002](DL3002.md) - Last USER should not be root.
-- [DL3007](DL3007.md) - Avoid using implicit or `latest` tags.
-- [DL3008](DL3008.md) - Pin versions in apt-get install.
-- [DL3009](DL3009.md) - Delete the APT lists after installing packages.
-- [DL3010](DL3010.md) - Use ADD for extracting archives into an image.
-- [DL3013](DL3013.md) - Pin versions in pip.
-- [DL3014](DL3014.md) - Use the -y switch for apt-get install.
-- [DL3015](DL3015.md) - Require `--no-install-recommends` with apt-get install.
-- [DL3018](DL3018.md) - Pin versions in apk add.
-- [DL3019](DL3019.md) - Use --no-cache with apk add.
-- [DL3020](DL3020.md) - Use COPY instead of ADD for files and folders.
-- [DL3021](DL3021.md) - COPY with more than 2 arguments requires the last argument to end with /.
-
-- [DL3040](DL3040.md) - dnf clean all missing after dnf command.
-- [DL3041](DL3041.md) - Avoid dnf upgrade or update in Dockerfiles.
-
-
-- [DL3042](DL3042.md) - Combine consecutive RUN instructions that use the same package manager.
-- [DL3043](DL3043.md) - Specify OS version tag for base images.
-- [DL3044](DL3044.md) - Specify version with dnf/microdnf install.
-
-- [DL3046](DL3046.md) - Avoid apk upgrade in Dockerfiles.
-- [DL3047](DL3047.md) - Clean apk cache after installing packages.
+- [DL1001](DL1001.md) - Avoid inline ignore pragmas
+- [DL3000](DL3000.md) - Use absolute WORKDIR
+- [DL3001](DL3001.md) - Avoid irrelevant shell commands
+- [DL3002](DL3002.md) - Last USER should not be root
+- [DL3003](DL3003.md) - Use WORKDIR to switch to a directory
+- [DL3004](DL3004.md) - Do not use sudo
+- [DL3006](DL3006.md) - Always tag the version of an image explicitly
+- [DL3007](DL3007.md) - Avoid latest tag
+- [DL3008](DL3008.md) - Pin versions in apt-get install
+- [DL3009](DL3009.md) - Delete the APT lists after installing packages
+- [DL3010](DL3010.md) - Use ADD for extracting archives into an image
+- [DL3011](DL3011.md) - Valid UNIX ports range from 0 to 65535
+- [DL3012](DL3012.md) - Multiple HEALTHCHECK instructions
+- [DL3013](DL3013.md) - Pin versions in pip
+- [DL3014](DL3014.md) - Use the -y switch for apt-get install
+- [DL3015](DL3015.md) - Use --no-install-recommends with apt-get
+- [DL3016](DL3016.md) - Pin versions in npm
+- [DL3018](DL3018.md) - Pin versions in apk add
+- [DL3019](DL3019.md) - Use --no-cache with apk add
+- [DL3020](DL3020.md) - Use COPY instead of ADD for files and folders
+- [DL3021](DL3021.md) - Ensure destination ends with slash when copying multiple sources
+- [DL3022](DL3022.md) - COPY --from should reference a previous FROM alias
+- [DL3023](DL3023.md) - COPY --from cannot reference its own stage
+- [DL3024](DL3024.md) - FROM aliases must be unique
+- [DL3025](DL3025.md) - Use JSON notation for CMD and ENTRYPOINT
+- [DL3026](DL3026.md) - Restrict registries used in FROM images
+- [DL3027](DL3027.md) - Avoid using apt
+- [DL3028](DL3028.md) - Pin gem versions
+- [DL3029](DL3029.md) - Do not use --platform flag with FROM
+- [DL3030](DL3030.md) - Use -y with yum install
+- [DL3032](DL3032.md) - Run `yum clean all`
+- [DL3033](DL3033.md) - Pin versions in yum install
+- [DL3034](DL3034.md) - Use non-interactive zypper
+- [DL3035](DL3035.md) - Avoid `zypper dist-upgrade`
+- [DL3036](DL3036.md) - Clean zypper cache
+- [DL3037](DL3037.md) - Pin versions in zypper install
+- [DL3038](DL3038.md) - Use -y with dnf install
+- [DL3040](DL3040.md) - dnf clean all missing after dnf command
+- [DL3041](DL3041.md) - Avoid dnf upgrade or update in Dockerfiles
+- [DL3042](DL3042.md) - Combine consecutive RUN instructions that use the same package manager
+- [DL3043](DL3043.md) - Specify OS version tag for base images
+- [DL3044](DL3044.md) - Specify version with dnf/microdnf install
+- [DL3045](DL3045.md) - COPY --from without digest pinning for external image
+- [DL3046](DL3046.md) - Avoid apk upgrade in Dockerfiles
+- [DL3047](DL3047.md) - Clean apk cache after installing packages
 - [DL3048](DL3048.md) - Invalid Label Key
-
-
-- [DL3050](DL3050.md) - Superfluous label(s) present.
-
-- [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
-
-
-- [DL4000](DL4000.md) - `MAINTAINER` is deprecated. Use `LABEL maintainer` instead.
-- [DL4001](DL4001.md) - Either use Wget or Curl but not both.
-- [DL4003](DL4003.md) - Multiple CMD instructions found. Only the last CMD takes effect.
-- [DL4004](DL4004.md) - Avoid multiple ENTRYPOINT instructions.
-- [DL4005](DL4005.md) - Use SHELL to change the default shell.
-
+- [DL3050](DL3050.md) - Superfluous label(s) present
+- [DL3051](DL3051.md) - Label value is empty
+- [DL3052](DL3052.md) - Label is not a valid URL
+- [DL3053](DL3053.md) - Label does not conform to RFC3339
+- [DL3054](DL3054.md) - Label is not a valid SPDX identifier
+- [DL3055](DL3055.md) - Stage image is not pinned by digest
+- [DL3056](DL3056.md) - Label does not conform to semantic versioning
+- [DL3057](DL3057.md) - `HEALTHCHECK` instruction missing
+- [DL3058](DL3058.md) - Label is not a valid email address
+- [DL3059](DL3059.md) - Multiple consecutive `RUN` instructions
+- [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`
+- [DL3061](DL3061.md) - Dockerfile must start with FROM or ARG
+- [DL4000](DL4000.md) - MAINTAINER is deprecated
+- [DL4001](DL4001.md) - Either use Wget or Curl but not both
+- [DL4003](DL4003.md) - Multiple CMD instructions
+- [DL4004](DL4004.md) - Multiple ENTRYPOINT instructions
+- [DL4005](DL4005.md) - Use SHELL to change the default shell
+- [DL4006](DL4006.md) - Set the SHELL option -o pipefail before RUN with a pipe in it
