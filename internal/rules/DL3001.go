@@ -6,9 +6,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/google/shlex"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
-
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
@@ -49,37 +46,4 @@ func (noIrrelevantCommands) Check(ctx context.Context, d *ir.Document) ([]engine
 		}
 	}
 	return findings, nil
-}
-
-// extractCommands returns command names invoked in a RUN instruction.
-func extractCommands(n *parser.Node) []string {
-	if n == nil || n.Next == nil {
-		return nil
-	}
-	if n.Attributes != nil && n.Attributes["json"] {
-		return []string{strings.ToLower(n.Next.Value)}
-	}
-	tokens, err := shlex.Split(n.Next.Value)
-	if err != nil {
-		return nil
-	}
-	return commandNames(tokens)
-}
-
-// commandNames identifies command boundaries within shell tokens.
-func commandNames(tokens []string) []string {
-	var cmds []string
-	expect := true
-	for _, tok := range tokens {
-		if expect {
-			cmds = append(cmds, strings.ToLower(tok))
-			expect = false
-			continue
-		}
-		switch tok {
-		case "&&", "||", "|", ";":
-			expect = true
-		}
-	}
-	return cmds
 }
