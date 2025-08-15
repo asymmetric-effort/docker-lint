@@ -24,6 +24,7 @@ The following Hadolint-compatible rules are implemented:
 - [DL3040](DL3040.md) - dnf clean all missing after dnf command.
 
 - [DL3041](DL3041.md) - Avoid dnf upgrade or update in Dockerfiles.
+- [DL3042](DL3042.md) - Combine consecutive RUN instructions that use the same package manager.
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 
 
