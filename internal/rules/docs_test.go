@@ -3,6 +3,7 @@
 package rules
 
 import (
+	"fmt"
 	"bufio"
 	"os"
 	"path/filepath"
@@ -35,9 +36,16 @@ func TestRuleDocsExist(t *testing.T) {
 		if !re.MatchString(name) {
 			continue
 		}
-		doc := filepath.Join(docDir, strings.TrimSuffix(name, ".go")+".md")
-		if _, err := os.Stat(doc); err != nil {
+		doc := filepath.Join(docDir, name[:len(name)-3]+".md")
+		content, err := os.ReadFile(doc)
+		if err != nil {
 			t.Errorf("missing documentation for %s", name)
+			continue
+		}
+		headerRe := regexp.MustCompile(fmt.Sprintf(`^#\s+%s\b`, name[:len(name)-3]))
+		lines := strings.Split(string(content), "\n")
+		if len(lines) == 0 || !headerRe.MatchString(lines[0]) {
+			t.Errorf("documentation for %s missing header '# %s'", name, name[:len(name)-3])
 		}
 	}
 }
