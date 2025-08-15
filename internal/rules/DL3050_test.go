@@ -3,22 +3,24 @@
 package rules
 
 import (
-	"context"
-	"strings"
-	"testing"
+        "context"
+        "strings"
+        "testing"
 
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
+        "github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/asymmetric-effort/docker-lint/internal/ir"
+        "github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
-func TestSuperfluousLabelsID(t *testing.T) {
-	if NewSuperfluousLabels(nil, true).ID() != "DL3050" {
-		t.Fatalf("unexpected id")
-	}
+// TestIntegrationSuperfluousLabelsID validates rule identity.
+func TestIntegrationSuperfluousLabelsID(t *testing.T) {
+        if NewSuperfluousLabels(nil, true).ID() != "DL3050" {
+                t.Fatalf("unexpected id")
+        }
 }
 
-func TestSuperfluousLabelsViolation(t *testing.T) {
+// TestIntegrationSuperfluousLabelsViolation reports unknown labels in strict mode.
+func TestIntegrationSuperfluousLabelsViolation(t *testing.T) {
 	src := "FROM scratch\nLABEL unknown=1\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -34,12 +36,13 @@ func TestSuperfluousLabelsViolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("expected one finding, got %d", len(findings))
-	}
+        if len(findings) != 1 {
+                t.Fatalf("expected one finding, got %d", len(findings))
+        }
 }
 
-func TestSuperfluousLabelsClean(t *testing.T) {
+// TestIntegrationSuperfluousLabelsClean ensures known labels pass in strict mode.
+func TestIntegrationSuperfluousLabelsClean(t *testing.T) {
 	src := "FROM scratch\nLABEL known=1\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -55,12 +58,13 @@ func TestSuperfluousLabelsClean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 0 {
-		t.Fatalf("expected no findings, got %d", len(findings))
-	}
+        if len(findings) != 0 {
+                t.Fatalf("expected no findings, got %d", len(findings))
+        }
 }
 
-func TestSuperfluousLabelsNonStrict(t *testing.T) {
+// TestIntegrationSuperfluousLabelsNonStrict allows unknown labels in non-strict mode.
+func TestIntegrationSuperfluousLabelsNonStrict(t *testing.T) {
 	src := "FROM scratch\nLABEL unknown=1\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -75,12 +79,13 @@ func TestSuperfluousLabelsNonStrict(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 0 {
-		t.Fatalf("expected no findings, got %d", len(findings))
-	}
+        if len(findings) != 0 {
+                t.Fatalf("expected no findings, got %d", len(findings))
+        }
 }
 
-func TestSuperfluousLabelsNilDocument(t *testing.T) {
+// TestIntegrationSuperfluousLabelsNilDocument ensures nil documents are handled gracefully.
+func TestIntegrationSuperfluousLabelsNilDocument(t *testing.T) {
 	r := NewSuperfluousLabels(nil, true)
 	if f, err := r.Check(context.Background(), nil); err != nil || len(f) != 0 {
 		t.Fatalf("expected no findings on nil doc: %v %v", f, err)

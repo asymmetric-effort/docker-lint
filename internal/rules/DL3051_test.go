@@ -3,22 +3,24 @@
 package rules
 
 import (
-	"context"
-	"strings"
-	"testing"
+        "context"
+        "strings"
+        "testing"
 
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
+        "github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/asymmetric-effort/docker-lint/internal/ir"
+        "github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
-func TestLabelNotEmptyID(t *testing.T) {
-	if NewLabelNotEmpty(nil).ID() != "DL3051" {
-		t.Fatalf("unexpected id")
-	}
+// TestIntegrationLabelNotEmptyID validates rule identity.
+func TestIntegrationLabelNotEmptyID(t *testing.T) {
+        if NewLabelNotEmpty(nil).ID() != "DL3051" {
+                t.Fatalf("unexpected id")
+        }
 }
 
-func TestLabelNotEmptyViolation(t *testing.T) {
+// TestIntegrationLabelNotEmptyViolation detects empty label values.
+func TestIntegrationLabelNotEmptyViolation(t *testing.T) {
 	src := "FROM scratch\nLABEL foo=\"\"\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -34,12 +36,13 @@ func TestLabelNotEmptyViolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("expected one finding, got %d", len(findings))
-	}
+        if len(findings) != 1 {
+                t.Fatalf("expected one finding, got %d", len(findings))
+        }
 }
 
-func TestLabelNotEmptyClean(t *testing.T) {
+// TestIntegrationLabelNotEmptyClean ensures populated values pass.
+func TestIntegrationLabelNotEmptyClean(t *testing.T) {
 	src := "FROM scratch\nLABEL foo=bar\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -55,12 +58,13 @@ func TestLabelNotEmptyClean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 0 {
-		t.Fatalf("expected no findings, got %d", len(findings))
-	}
+        if len(findings) != 0 {
+                t.Fatalf("expected no findings, got %d", len(findings))
+        }
 }
 
-func TestLabelNotEmptyWhitespace(t *testing.T) {
+// TestIntegrationLabelNotEmptyWhitespace flags values containing only whitespace.
+func TestIntegrationLabelNotEmptyWhitespace(t *testing.T) {
 	src := "FROM scratch\nLABEL foo=\" \"\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -76,12 +80,13 @@ func TestLabelNotEmptyWhitespace(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("expected one finding, got %d", len(findings))
-	}
+        if len(findings) != 1 {
+                t.Fatalf("expected one finding, got %d", len(findings))
+        }
 }
 
-func TestLabelNotEmptyOverwrite(t *testing.T) {
+// TestIntegrationLabelNotEmptyOverwrite verifies later non-empty labels override earlier empty ones.
+func TestIntegrationLabelNotEmptyOverwrite(t *testing.T) {
 	src := "FROM scratch\nLABEL foo=\"\"\nLABEL foo=\"bar\"\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -114,12 +119,13 @@ func TestLabelNotEmptyOverwrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("expected one finding, got %d", len(findings))
-	}
+        if len(findings) != 1 {
+                t.Fatalf("expected one finding, got %d", len(findings))
+        }
 }
 
-func TestLabelNotEmptyNilDocument(t *testing.T) {
+// TestIntegrationLabelNotEmptyNilDocument ensures nil documents are handled gracefully.
+func TestIntegrationLabelNotEmptyNilDocument(t *testing.T) {
 	r := NewLabelNotEmpty(nil)
 	if f, err := r.Check(context.Background(), nil); err != nil || len(f) != 0 {
 		t.Fatalf("expected no findings on nil doc: %v %v", f, err)
