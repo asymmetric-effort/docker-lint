@@ -98,11 +98,9 @@ func violatesPipPin(cmd []string) bool {
 			case "r", "requirement":
 				requirement = true
 				i++
-				break
 			case "c", "constraint":
 				hasConstraint = true
 				i++
-				break
 			default:
 				if _, ok := flagsWithArg[flag]; ok {
 					i++

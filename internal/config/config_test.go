@@ -25,5 +25,22 @@ func TestLoad(t *testing.T) {
 	}
 	if cfg.Exclusions[0] != "DL3007" || cfg.Exclusions[1] != "DL3043" {
 		t.Fatalf("unexpected exclusions: %v", cfg.Exclusions)
+// TestLoadAndIsRuleExcluded verifies configuration loading and exclusion checks.
+func TestLoadAndIsRuleExcluded(t *testing.T) {
+	tmp := t.TempDir()
+	cfgPath := filepath.Join(tmp, ".docker-lint.yaml")
+	src := "exclude:\n  Dockerfile.bad:\n    - DL3007\n"
+	if err := os.WriteFile(cfgPath, []byte(src), 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	cfg, err := Load(cfgPath)
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	if !cfg.IsRuleExcluded(filepath.Join(tmp, "Dockerfile.bad"), "DL3007") {
+		t.Fatalf("expected rule excluded")
+	}
+	if cfg.IsRuleExcluded(filepath.Join(tmp, "Dockerfile.bad"), "DL3043") {
+		t.Fatalf("unexpected exclusion")
 	}
 }

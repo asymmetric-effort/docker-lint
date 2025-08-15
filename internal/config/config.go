@@ -4,7 +4,7 @@ package config
 
 import (
 	"os"
-
+	"path/filepath"
 	"gopkg.in/yaml.v3"
 )
 
@@ -26,4 +26,22 @@ func Load(path string) (*Config, error) {
 		return nil, err
 	}
 	return &cfg, nil
+}
+
+// IsRuleExcluded reports whether the given rule is excluded for the file.
+func (c *Config) IsRuleExcluded(path, rule string) bool {
+	if c == nil {
+		return false
+	}
+	base := filepath.Base(path)
+	rules, ok := c.Exclude[base]
+	if !ok {
+		return false
+	}
+	for _, r := range rules {
+		if r == rule {
+			return true
+		}
+	}
+	return false
 }
