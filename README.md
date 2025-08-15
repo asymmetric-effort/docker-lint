@@ -10,10 +10,11 @@ go install github.com/asymmetric-effort/docker-lint/cmd/docker-lint@latest
 
 ## Usage
 
-Provide the path to a Dockerfile. Findings are emitted as a JSON array to standard output.
+Provide one or more paths or glob patterns (supports `*` and `**`). Matching files are linted and findings are emitted as a JSON array to standard output.
 
 ```bash
 docker-lint /path/to/Dockerfile
+docker-lint './**/Dockerfile'
 ```
 
 Example output:
@@ -28,16 +29,23 @@ Example output:
 ]
 ```
 
-## Development
+## Linting Containers
 
-Common tasks are defined in the [Taskfile](Taskfile.yml). To run them manually:
+docker-lint is also published as a container image. This allows you to lint Dockerfiles without installing the binary on your host system. Mount your project directory and provide the Dockerfile path inside the container:
 
 ```bash
-go mod tidy
-go test ./... -short -cover
-go test ./... -run Integration -covermode=atomic -coverpkg=./... -coverprofile=coverage.out
-go tool cover -func=coverage.out | awk '/total:/ { print; if ($3+0 < 80) exit 1 }'
-go build -trimpath -ldflags "-s -w" ./cmd/docker-lint
+docker run --rm -v "$(pwd):/src" ghcr.io/asymmetric-effort/docker-lint:latest /src/Dockerfile
+```
+
+## Development
+
+Common tasks can be run using [`make`](Makefile):
+
+```bash
+make clean   # Remove build artifacts
+make lint    # Run static analysis
+make test    # Run unit and integration tests
+make build   # Build the docker-lint binary
 ```
 
 ## License
