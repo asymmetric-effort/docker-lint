@@ -120,7 +120,7 @@ func violatesPipPin(cmd []string) bool {
 		return false
 	}
 	for _, p := range pkgs {
-		if !versionFixed(p) {
+		if !pipVersionFixed(p) {
 			return true
 		}
 	}
@@ -143,8 +143,8 @@ func isPip(tok string) bool {
 	return strings.HasPrefix(tok, "pip")
 }
 
-// versionFixed reports whether a package token pins its version.
-func versionFixed(pkg string) bool {
+// pipVersionFixed reports whether a package token pins its version.
+func pipVersionFixed(pkg string) bool {
 	if strings.Contains(pkg, "@") {
 		return true
 	}
