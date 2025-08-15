@@ -40,6 +40,27 @@ func TestIntegrationUseADDForArchivesViolation(t *testing.T) {
 	}
 }
 
+// TestIntegrationUseADDForArchivesFileDest ignores archives copied to file paths.
+func TestIntegrationUseADDForArchivesFileDest(t *testing.T) {
+	src := "FROM alpine\nCOPY app.tar.gz /opt/app.tar.gz\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewUseADDForArchives()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
+}
+
 // TestIntegrationUseADDForArchivesClean ensures compliant Dockerfiles pass.
 func TestIntegrationUseADDForArchivesClean(t *testing.T) {
 	src := "FROM alpine\nCOPY app.txt /opt/\n"

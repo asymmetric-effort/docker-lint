@@ -60,3 +60,14 @@ func TestIntegrationNoInlineIgnoreClean(t *testing.T) {
 		t.Fatalf("expected no findings, got %d", len(findings))
 	}
 }
+
+// TestIntegrationNoInlineIgnoreNilDocument ensures graceful handling of nil input.
+func TestIntegrationNoInlineIgnoreNilDocument(t *testing.T) {
+	r := NewNoInlineIgnore()
+	if findings, err := r.Check(context.Background(), nil); err != nil || len(findings) != 0 {
+		t.Fatalf("expected no findings on nil doc: %v %v", findings, err)
+	}
+	if findings, err := r.Check(context.Background(), &ir.Document{}); err != nil || len(findings) != 0 {
+		t.Fatalf("expected no findings on empty doc: %v %v", findings, err)
+	}
+}

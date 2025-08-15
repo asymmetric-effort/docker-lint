@@ -40,6 +40,27 @@ func TestIntegrationAbsoluteWorkdirViolation(t *testing.T) {
 	}
 }
 
+// TestIntegrationAbsoluteWorkdirDotRelative detects relative paths with leading dot.
+func TestIntegrationAbsoluteWorkdirDotRelative(t *testing.T) {
+	src := "FROM alpine\nWORKDIR ./app\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewAbsoluteWorkdir()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
+}
+
 // TestIntegrationAbsoluteWorkdirClean ensures absolute paths pass.
 func TestIntegrationAbsoluteWorkdirClean(t *testing.T) {
 	src := "FROM alpine\nWORKDIR /app\n"

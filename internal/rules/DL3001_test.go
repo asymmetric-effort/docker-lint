@@ -82,6 +82,27 @@ func TestIntegrationNoIrrelevantCommandsConnector(t *testing.T) {
 	}
 }
 
+// TestIntegrationNoIrrelevantCommandsOrConnector handles OR connectors.
+func TestIntegrationNoIrrelevantCommandsOrConnector(t *testing.T) {
+	src := "FROM alpine\nRUN ssh localhost || echo hi\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewNoIrrelevantCommands()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
+}
+
 // TestIntegrationNoIrrelevantCommandsClean ensures compliant Dockerfiles pass.
 func TestIntegrationNoIrrelevantCommandsClean(t *testing.T) {
 	src := "FROM alpine\nRUN echo hi\n"

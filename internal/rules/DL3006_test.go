@@ -63,6 +63,22 @@ func TestIntegrationRequireTagClean(t *testing.T) {
 	}
 }
 
+// TestIntegrationRequireTagScratchAndVariable allows scratch and variable images.
+func TestIntegrationRequireTagScratchAndVariable(t *testing.T) {
+	r := NewRequireTag()
+	doc := &ir.Document{Stages: []*ir.Stage{
+		{Index: 0, From: "scratch", Node: &parser.Node{StartLine: 1}},
+		{Index: 1, From: "$BASE", Node: &parser.Node{StartLine: 2}},
+	}}
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
+}
+
 // TestIntegrationRequireTagNilDocument ensures graceful handling of nil input.
 func TestIntegrationRequireTagNilDocument(t *testing.T) {
 	r := NewRequireTag()

@@ -40,6 +40,27 @@ func TestIntegrationLastUserNotRootViolation(t *testing.T) {
 	}
 }
 
+// TestIntegrationLastUserNotRootGroup detects root with group specification.
+func TestIntegrationLastUserNotRootGroup(t *testing.T) {
+	src := "FROM alpine\nUSER root:root\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewLastUserNotRoot()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
+}
+
 // TestIntegrationLastUserNotRootClean ensures compliant Dockerfiles pass.
 func TestIntegrationLastUserNotRootClean(t *testing.T) {
 	src := "FROM alpine\nUSER root\nUSER app\nRUN echo hi\nFROM busybox\nRUN echo hi\n"

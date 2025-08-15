@@ -46,3 +46,15 @@ func TestIntegrationNoLatestTagClean(t *testing.T) {
 		t.Fatalf("expected no findings, got %d", len(findings))
 	}
 }
+
+// TestIntegrationNoLatestTagEmptyDocument ensures empty docs pass.
+func TestIntegrationNoLatestTagEmptyDocument(t *testing.T) {
+	r := NewNoLatestTag()
+	findings, err := r.Check(context.Background(), &ir.Document{})
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
+}

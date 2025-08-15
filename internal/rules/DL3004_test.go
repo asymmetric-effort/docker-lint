@@ -40,6 +40,27 @@ func TestIntegrationNoSudoViolation(t *testing.T) {
 	}
 }
 
+// TestIntegrationNoSudoExecForm detects sudo usage in JSON form.
+func TestIntegrationNoSudoExecForm(t *testing.T) {
+	src := "FROM alpine\nRUN [\"sudo\",\"echo\",\"hi\"]\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewNoSudo()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
+}
+
 // TestIntegrationNoSudoClean ensures compliant Dockerfiles pass.
 func TestIntegrationNoSudoClean(t *testing.T) {
 	src := "FROM alpine\nRUN echo hi\n"

@@ -61,6 +61,27 @@ func TestIntegrationAptListsCleanupClean(t *testing.T) {
 	}
 }
 
+// TestIntegrationAptListsCleanupFindDelete uses find -delete for cleanup.
+func TestIntegrationAptListsCleanupFindDelete(t *testing.T) {
+	src := "FROM ubuntu\nRUN apt-get install -y curl && find /var/lib/apt/lists -delete\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewAptListsCleanup()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
+}
+
 // TestIntegrationAptListsCleanupCleanOnly verifies apt-get clean is insufficient.
 func TestIntegrationAptListsCleanupCleanOnly(t *testing.T) {
 	src := "FROM ubuntu\nRUN apt-get update && apt-get install -y curl && apt-get clean\n"
