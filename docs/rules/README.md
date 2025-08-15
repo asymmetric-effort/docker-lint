@@ -12,3 +12,4 @@ The following Hadolint-compatible rules are implemented:
 - [DL3010](DL3010.md) - Use ADD for extracting archives into an image.
 - [DL3014](DL3014.md) - Use the -y switch for apt-get install.
 - [DL4000](DL4000.md) - `MAINTAINER` is deprecated. Use `LABEL maintainer` instead.
+- [DL3013](DL3013.md) - Pin versions in pip.
