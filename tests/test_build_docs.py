@@ -28,7 +28,7 @@ def test_build_site_generates_html(tmp_path: Path) -> None:
     (src / "README.md").write_text("![icon](docs/img/docker-linter.png)\n# R", encoding="utf-8")
     (src / "LICENSE").write_text("MIT", encoding="utf-8")
     out = src / "site"
-    build_site(src, out)
+    build_site(src, out, "abc123")
     assert (out / "README.html").exists()
     assert (out / "docs" / "a.html").exists()
     assert (out / "index.html").exists()
@@ -43,8 +43,21 @@ def test_build_site_adds_seo_metadata(tmp_path: Path) -> None:
     (src / "README.md").write_text("# R\n\nAbout R", encoding="utf-8")
     (src / "LICENSE").write_text("MIT", encoding="utf-8")
     out = src / "site"
-    build_site(src, out)
+    build_site(src, out, "abc123")
     html = (out / "README.html").read_text(encoding="utf-8")
     assert "<title>R | docker-lint</title>" in html
     assert '<meta name="description" content="About R"' in html
+
+
+def test_build_site_embeds_commit_hash(tmp_path: Path) -> None:
+    """HTML pages should contain a commit hash meta tag."""
+    src = tmp_path
+    (src / "docs").mkdir()
+    (src / "docs" / "a.md").write_text("# A", encoding="utf-8")
+    (src / "README.md").write_text("# R", encoding="utf-8")
+    (src / "LICENSE").write_text("MIT", encoding="utf-8")
+    out = src / "site"
+    build_site(src, out, "deadbeef")
+    html = (out / "README.html").read_text(encoding="utf-8")
+    assert '<meta name="docker-lint:commit" content="deadbeef"' in html
 

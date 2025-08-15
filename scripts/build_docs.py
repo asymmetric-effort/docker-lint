@@ -19,6 +19,7 @@ HTML_TEMPLATE = """<!doctype html>
 <meta charset=\"utf-8\">
 <title>{title}</title>
 <meta name=\"description\" content=\"{description}\">
+<meta name=\"docker-lint:commit\" content=\"{commit}\">
 </head>
 <body>
 {content}
@@ -65,9 +66,9 @@ def convert_file(md_path: Path) -> Tuple[str, str, str]:
     return html, title, description
 
 
-def render_page(title: str, description: str, body: str) -> str:
-    """Render a full HTML page with SEO tags."""
-    return HTML_TEMPLATE.format(title=title, description=description, content=body)
+def render_page(title: str, description: str, body: str, commit: str) -> str:
+    """Render a full HTML page with SEO and commit metadata."""
+    return HTML_TEMPLATE.format(title=title, description=description, commit=commit, content=body)
 
 
 def write_html(html: str, dest: Path) -> None:
@@ -103,19 +104,25 @@ def copy_static_assets(src: Path, out: Path) -> None:
                 shutil.copy2(file, dest / file.name)
 
 
-def build_site(src: Path, out: Path) -> None:
-    """Generate HTML pages and an index from source Markdown files."""
+def build_site(src: Path, out: Path, commit: str) -> None:
+    """Generate HTML pages and an index from source Markdown files.
+
+    Args:
+        src: Project root containing Markdown sources.
+        out: Destination directory for generated site.
+        commit: Git commit hash embedded in pages.
+    """
     files = collect_markdown_files(src)
     copy_static_assets(src, out)
     for md_file in files:
         body, title, description = convert_file(md_file)
-        page_html = render_page(f"{title} | docker-lint", description, body)
+        page_html = render_page(f"{title} | docker-lint", description, body, commit)
         dest = out / md_file.relative_to(src).with_suffix(".html")
         write_html(page_html, dest)
 
     license_text = (src / "LICENSE").read_text(encoding="utf-8")
     license_html = markdown.markdown(license_text)
-    license_page = render_page("License | docker-lint", "", license_html)
+    license_page = render_page("License | docker-lint", "", license_html, commit)
     write_html(license_page, out / "license.html")
 
     links = [
@@ -124,7 +131,7 @@ def build_site(src: Path, out: Path) -> None:
     ]
     links.append('<li><a href="license.html">License</a></li>')
     index_body = "<ul>\n" + "\n".join(links) + "\n</ul>"
-    index_html = render_page("Index | docker-lint", "Documentation index", index_body)
+    index_html = render_page("Index | docker-lint", "Documentation index", index_body, commit)
     write_html(index_html, out / "index.html")
 
 
@@ -133,8 +140,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Build documentation site.")
     parser.add_argument("--src", type=Path, default=Path("."), help="Source directory")
     parser.add_argument("--output", type=Path, required=True, help="Output directory")
+    parser.add_argument("--commit", required=True, help="Git commit hash for meta tag")
     args = parser.parse_args()
-    build_site(args.src, args.output)
+    build_site(args.src, args.output, args.commit)
 
 
 if __name__ == "__main__":
