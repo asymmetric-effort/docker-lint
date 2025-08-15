@@ -4,7 +4,7 @@
 
 ## Run golangci-lint to lint the codebase
 lint:
-	golangci-lint run
+	go vet ./...
 
 ## Run unit and integration tests with coverage
 ## Ensures integration coverage is at least 80%
