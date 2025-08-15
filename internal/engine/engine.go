@@ -39,13 +39,19 @@ func (r *Registry) Register(rule Rule) { r.rules = append(r.rules, rule) }
 
 // Run executes all registered rules against the document.
 func (r *Registry) Run(ctx context.Context, d *ir.Document) ([]Finding, error) {
+	ignores := lineIgnores(d)
 	var all []Finding
 	for _, rl := range r.rules {
 		f, err := rl.Check(ctx, d)
 		if err != nil {
 			return nil, err
 		}
-		all = append(all, f...)
+		for _, fd := range f {
+			if shouldSkip(ignores, fd) {
+				continue
+			}
+			all = append(all, fd)
+		}
 	}
 	return all, nil
 }
