@@ -35,7 +35,7 @@ func (pinNpmVersion) Check(ctx context.Context, d *ir.Document) ([]engine.Findin
 		if !strings.EqualFold(n.Value, "run") {
 			continue
 		}
-		segments := splitRunSegments(n)
+		segments := splitRunSegmentsNpm(n)
 		for _, seg := range segments {
 			if len(seg) == 0 {
 				continue
@@ -94,8 +94,8 @@ func npmInstallPackages(tokens []string) []string {
 	return packages
 }
 
-// splitRunSegments tokenizes a RUN node and splits it into command segments.
-func splitRunSegments(n *parser.Node) [][]string {
+// splitRunSegmentsNpm tokenizes a RUN node and splits it into command segments.
+func splitRunSegmentsNpm(n *parser.Node) [][]string {
 	if n == nil || n.Next == nil {
 		return nil
 	}
@@ -133,15 +133,15 @@ func splitRunSegments(n *parser.Node) [][]string {
 // allVersionFixed returns true if all packages specify a version, tag, or commit.
 func allVersionFixed(pkgs []string) bool {
 	for _, p := range pkgs {
-		if !versionFixed(p) {
+		if !npmVersionFixed(p) {
 			return false
 		}
 	}
 	return true
 }
 
-// versionFixed determines if a package argument is pinned to a version.
-func versionFixed(pkg string) bool {
+// npmVersionFixed determines if a package argument is pinned to a version.
+func npmVersionFixed(pkg string) bool {
 	if hasGitPrefix(pkg) {
 		return isVersionedGit(pkg)
 	}
