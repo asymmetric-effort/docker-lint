@@ -14,33 +14,43 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
-var gitHashPattern = regexp.MustCompile(`^[0-9a-f]{7}([0-9a-f]{33})?$`)
+var digestPattern = regexp.MustCompile(`@sha256:[0-9a-f]{64}$`)
 
-// labelGitHashValid ensures Git hash labels are valid.
-type labelGitHashValid struct{ schema LabelSchema }
+// stageDigestPinned ensures configured stages pin images by digest.
+type stageDigestPinned struct{ required map[string]struct{} }
 
-// NewLabelGitHashValid constructs the rule.
-func NewLabelGitHashValid(schema LabelSchema) engine.Rule { return &labelGitHashValid{schema: schema} }
+// NewStageDigestPinned constructs the rule.
+func NewStageDigestPinned(stages []string) engine.Rule {
+	req := make(map[string]struct{}, len(stages))
+	for _, s := range stages {
+		req[strings.ToLower(s)] = struct{}{}
+	}
+	return &stageDigestPinned{required: req}
+}
 
 // ID returns the rule identifier.
-func (labelGitHashValid) ID() string { return "DL3055" }
+func (stageDigestPinned) ID() string { return "DL3055" }
 
-// Check validates Git hash label values.
-func (r *labelGitHashValid) Check(ctx context.Context, d *ir.Document) ([]engine.Finding, error) {
+// Check verifies required stages use digest-pinned images.
+func (r *stageDigestPinned) Check(ctx context.Context, d *ir.Document) ([]engine.Finding, error) {
 	var findings []engine.Finding
 	if d == nil || d.AST == nil {
 		return findings, nil
 	}
-	for _, n := range d.AST.Children {
-		if !strings.EqualFold(n.Value, "label") {
+	if len(r.required) == 0 {
+		return findings, nil
+	}
+	for _, st := range d.Stages {
+		if _, ok := r.required[strings.ToLower(st.Name)]; !ok {
 			continue
 		}
-		for _, p := range collectLabelPairs(n) {
-			if r.schema[p.Key] == LabelTypeGitHash {
-				if !gitHashPattern.MatchString(strings.ToLower(p.Value)) {
-					findings = append(findings, engine.Finding{RuleID: "DL3055", Message: "Label `" + p.Key + "` is not a valid git hash.", Line: n.StartLine})
-				}
-			}
+		img := strings.ToLower(st.From)
+		if !digestPattern.MatchString(img) {
+			findings = append(findings, engine.Finding{
+				RuleID:  "DL3055",
+				Message: "Stage \"" + st.Name + "\" image is not pinned by digest.",
+				Line:    st.Node.StartLine,
+			})
 		}
 	}
 	return findings, nil
