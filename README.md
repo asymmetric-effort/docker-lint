@@ -30,14 +30,13 @@ Example output:
 
 ## Development
 
-Common tasks are defined in the [Taskfile](Taskfile.yml). To run them manually:
+Common tasks can be run using [`make`](Makefile):
 
 ```bash
-go mod tidy
-go test ./... -short -cover
-go test ./... -run Integration -covermode=atomic -coverpkg=./... -coverprofile=coverage.out
-go tool cover -func=coverage.out | awk '/total:/ { print; if ($3+0 < 80) exit 1 }'
-go build -trimpath -ldflags "-s -w" ./cmd/docker-lint
+make clean   # Remove build artifacts
+make lint    # Run static analysis
+make test    # Run unit and integration tests
+make build   # Build the docker-lint binary
 ```
 
 ## License
