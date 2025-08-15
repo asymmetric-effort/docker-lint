@@ -49,9 +49,10 @@ func commandNames(tokens []string) []string {
 	return cmds
 }
 
-// splitRunSegments tokenizes a RUN instruction and splits it into command segments.
-// It handles both shell-form and JSON-form RUN instructions.
-func splitRunSegments(n *parser.Node) [][]string {
+// splitRunSegmentsNpm tokenizes a RUN instruction and splits it into command
+// segments while preserving original token casing. It is tailored for rules
+// that require case-sensitive analysis such as npm package checks.
+func splitRunSegmentsNpm(n *parser.Node) [][]string {
 	if n == nil || n.Next == nil {
 		return nil
 	}
