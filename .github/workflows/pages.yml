@@ -26,9 +26,58 @@ jobs:
       - name: Build documentation
         run: |
           python scripts/build_docs.py --output dist
+      - name: Copy CNAME and assets
+        run: |
+          cp docs/CNAME dist/CNAME
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+      - name: Embed commit hash
+        run: |
+          find dist -name "*.html" -exec sed -i "s/__GIT_COMMIT__/${{ github.sha }}/g" {} +
       - name: Deploy to gh_pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh_pages
+      - name: Configure Pages domain
+        run: |
+          curl -L -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/pages \
+            -d '{"cname":"docker-lint.asymmetric-effort.com"}'
+
+  post-deploy-verification:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+          python -m pip install --upgrade pip
+          pip install selenium webdriver-manager
+      - name: Verify deployment
+        env:
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          python scripts/verify_deploy.py "$COMMIT_HASH"
