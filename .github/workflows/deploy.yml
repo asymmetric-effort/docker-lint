@@ -1,0 +1,53 @@
+# file: .github/workflows/deploy.yml
+# (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
+
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install markdown
+      - name: Build documentation
+        run: |
+          python scripts/build_docs.py --output dist --commit $GITHUB_SHA
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiKey: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          directory: dist
+
+  post-deploy-verification:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+          python -m pip install --upgrade pip
+          pip install selenium webdriver-manager
+      - name: Verify deployment
+        env:
+          VERIFY_URL: https://docker-lint.asymmetric-effort.com
+        run: |
+          python scripts/verify_deploy.py $GITHUB_SHA

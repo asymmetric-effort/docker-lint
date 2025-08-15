@@ -1,6 +1,6 @@
 # file: scripts/verify_deploy.py
 # (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
-"""Selenium-based post-deployment verification for the deploy-lint site."""
+"""Selenium-based post-deployment verification for the docker-lint site."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-DEFAULT_URL = "https://deploy-lint.asymmetric-effort.com"
+DEFAULT_URL = "https://docker-lint.asymmetric-effort.com"
 
 
 def create_driver() -> webdriver.Chrome:
