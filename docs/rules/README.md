@@ -18,4 +18,5 @@ The following Hadolint-compatible rules are implemented:
 - [DL3020](DL3020.md) - Use COPY instead of ADD for files and folders.
 - [DL3021](DL3021.md) - COPY with more than 2 arguments requires the last argument to end with /.
 - [DL4000](DL4000.md) - `MAINTAINER` is deprecated. Use `LABEL maintainer` instead.
+- [DL4003](DL4003.md) - Multiple CMD instructions found. Only the last CMD takes effect.
 
