@@ -12,3 +12,5 @@ coverage.out
 .idea/
 .vscode/
 build/
+
+coverage.out
