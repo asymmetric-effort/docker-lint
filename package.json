@@ -4,7 +4,7 @@
   "description": "Static website for Docker Lint.",
   "type": "module",
   "scripts": {
-    "test": "node --test gh_pages/js/app.test.js"
+    "test": "node --test docs/js/*.test.js"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"
