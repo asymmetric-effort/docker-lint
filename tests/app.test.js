@@ -18,7 +18,7 @@ setBusy(content, false);
 assert.equal(content.getAttribute('aria-busy'), 'false');
 
 global.fetch = async () => ({ ok: true, text: async () => '<h2>Test</h2>' });
-await load('content/README.html', content, article);
+  await load('/content/README.html', content, article);
 assert.equal(content.getAttribute('aria-busy'), 'false');
 assert.match(article.innerHTML, /Test/);
 

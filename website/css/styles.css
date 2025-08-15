@@ -15,8 +15,8 @@
 html,body{height:100%;}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;}
 .container{max-width:1200px;margin:0 auto;padding:0 16px;}
-#banner{height:var(--banner-h);display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid var(--border);}
-#banner .banner-inner{display:flex;align-items:center;gap:12px;height:100%;}
+#banner{display:flex;flex-direction:column;border-bottom:1px solid var(--border);}
+#banner .banner-inner{display:flex;align-items:center;gap:12px;height:var(--banner-h);}
 #banner .brand-mark{height:64px;width:auto;}
 #banner .site-title{margin:0;font-size:28px;}
 .top-nav{display:flex;gap:20px;padding:8px 0;border-top:1px solid var(--border);}
