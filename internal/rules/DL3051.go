@@ -28,14 +28,25 @@ func (r *labelNotEmpty) Check(ctx context.Context, d *ir.Document) ([]engine.Fin
 	if d == nil || d.AST == nil {
 		return findings, nil
 	}
+
+	type labelInfo struct {
+		val  string
+		line int
+	}
+	labels := map[string]labelInfo{}
+
 	for _, n := range d.AST.Children {
 		if !strings.EqualFold(n.Value, "label") {
 			continue
 		}
 		for _, p := range collectLabelPairs(n) {
-			if inSchema(r.schema, p.Key) && p.Value == "" {
-				findings = append(findings, engine.Finding{RuleID: "DL3051", Message: "label `" + p.Key + "` is empty.", Line: n.StartLine})
-			}
+			labels[p.Key] = labelInfo{val: strings.TrimSpace(p.Value), line: n.StartLine}
+		}
+	}
+
+	for k, info := range labels {
+		if inSchema(r.schema, k) && info.val == "" {
+			findings = append(findings, engine.Finding{RuleID: "DL3051", Message: "label `" + k + "` is empty.", Line: info.line})
 		}
 	}
 	return findings, nil
