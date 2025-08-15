@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -49,7 +50,7 @@ func main() {
 // When color is true, the summary uses ANSI colors.
 func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	if len(args) < 1 {
-		return fmt.Errorf(usageText)
+		return errors.New(usageText)
 	}
 	if args[0] == "-h" || args[0] == "--help" {
 		printUsage(out)
