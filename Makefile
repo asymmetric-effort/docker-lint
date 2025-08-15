@@ -15,4 +15,9 @@ test:
 
 ## Build the docker-lint binary
 build:
-	go build -trimpath -ldflags "-s -w" ./cmd/docker-lint
+	@mkdir -p build &> /dev/null || true
+	go build -o build/docker-lint -trimpath -ldflags "-s -w" ./cmd/docker-lint
+
+clean:
+	@rm -rf build &> /dev/null || true
+	@echo 'make clean: ok'
