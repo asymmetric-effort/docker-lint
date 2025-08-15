@@ -17,6 +17,14 @@ docker-lint /path/to/Dockerfile
 docker-lint './**/Dockerfile'
 ```
 
+To display the current version:
+
+```bash
+docker-lint --version
+docker-lint -version
+docker-lint version
+```
+
 Example output:
 
 ```json

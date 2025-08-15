@@ -15,6 +15,7 @@ import (
 
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/rules"
+	"github.com/asymmetric-effort/docker-lint/internal/version"
 )
 
 func TestIntegrationRunDetectsLatest(t *testing.T) {
@@ -279,5 +280,41 @@ func TestIntegrationRunConfigFlagLong(t *testing.T) {
 	}
 	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
 		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
+	}
+}
+
+// TestIntegrationRunVersion ensures the version command prints the current version.
+func TestIntegrationRunVersion(t *testing.T) {
+	var out bytes.Buffer
+	if err := run([]string{"version"}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	got := strings.TrimSpace(out.String())
+	if got != version.Current {
+		t.Fatalf("expected %q, got %q", version.Current, got)
+	}
+}
+
+// TestIntegrationRunVersionFlagShort ensures -version prints the current version.
+func TestIntegrationRunVersionFlagShort(t *testing.T) {
+	var out bytes.Buffer
+	if err := run([]string{"-version"}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	got := strings.TrimSpace(out.String())
+	if got != version.Current {
+		t.Fatalf("expected %q, got %q", version.Current, got)
+	}
+}
+
+// TestIntegrationRunVersionFlagLong ensures --version prints the current version.
+func TestIntegrationRunVersionFlagLong(t *testing.T) {
+	var out bytes.Buffer
+	if err := run([]string{"--version"}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	got := strings.TrimSpace(out.String())
+	if got != version.Current {
+		t.Fatalf("expected %q, got %q", version.Current, got)
 	}
 }

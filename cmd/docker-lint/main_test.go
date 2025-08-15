@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
+	"github.com/asymmetric-effort/docker-lint/internal/version"
 	"github.com/sam-caldwell/ansi"
 )
 
@@ -60,5 +61,77 @@ func TestMainNoColorFlag(t *testing.T) {
 	out, _ := io.ReadAll(r)
 	if strings.Contains(string(out), ansi.CodeFgGreen) {
 		t.Fatalf("unexpected color codes in stderr: %q", out)
+	}
+}
+
+// TestMainVersion ensures the CLI prints the current version with the version command.
+func TestMainVersion(t *testing.T) {
+	oldArgs := os.Args
+	defer func() { os.Args = oldArgs }()
+	os.Args = []string{"docker-lint", "version"}
+
+	oldStdout := os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("pipe: %v", err)
+	}
+	os.Stdout = w
+
+	main()
+
+	w.Close()
+	os.Stdout = oldStdout
+	out, _ := io.ReadAll(r)
+	got := strings.TrimSpace(string(out))
+	if got != version.Current {
+		t.Fatalf("expected %q, got %q", version.Current, got)
+	}
+}
+
+// TestMainVersionFlagShort ensures the CLI prints the version with -version.
+func TestMainVersionFlagShort(t *testing.T) {
+	oldArgs := os.Args
+	defer func() { os.Args = oldArgs }()
+	os.Args = []string{"docker-lint", "-version"}
+
+	oldStdout := os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("pipe: %v", err)
+	}
+	os.Stdout = w
+
+	main()
+
+	w.Close()
+	os.Stdout = oldStdout
+	out, _ := io.ReadAll(r)
+	got := strings.TrimSpace(string(out))
+	if got != version.Current {
+		t.Fatalf("expected %q, got %q", version.Current, got)
+	}
+}
+
+// TestMainVersionFlagLong ensures the CLI prints the version with --version.
+func TestMainVersionFlagLong(t *testing.T) {
+	oldArgs := os.Args
+	defer func() { os.Args = oldArgs }()
+	os.Args = []string{"docker-lint", "--version"}
+
+	oldStdout := os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("pipe: %v", err)
+	}
+	os.Stdout = w
+
+	main()
+
+	w.Close()
+	os.Stdout = oldStdout
+	out, _ := io.ReadAll(r)
+	got := strings.TrimSpace(string(out))
+	if got != version.Current {
+		t.Fatalf("expected %q, got %q", version.Current, got)
 	}
 }

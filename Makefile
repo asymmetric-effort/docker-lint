@@ -22,7 +22,8 @@ test: tidy
 ## Build the docker-lint binary
 build: tidy
 	@mkdir -p build &> /dev/null || true
-	go build -o build/docker-lint -trimpath -ldflags "-s -w" ./cmd/docker-lint
+	VERSION=$$(git describe --tags --always --dirty); \
+        go build -o build/docker-lint -trimpath -ldflags "-s -w -X github.com/asymmetric-effort/docker-lint/internal/version.Current=$${VERSION}" ./cmd/docker-lint
 
 tidy:
 	go mod tidy
