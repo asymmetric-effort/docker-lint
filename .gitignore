@@ -11,3 +11,4 @@ coverage.out
 # Editor directories
 .idea/
 .vscode/
+build/
