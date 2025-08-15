@@ -1,0 +1,13 @@
+{
+  "name": "docker-lint-site",
+  "version": "1.0.0",
+  "description": "Static website for Docker Lint.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test js/app.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  },
+  "license": "MIT"
+}
