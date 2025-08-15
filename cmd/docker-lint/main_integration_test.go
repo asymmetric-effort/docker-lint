@@ -180,3 +180,44 @@ func TestIntegrationRunDoubleStar(t *testing.T) {
 		t.Fatalf("expected 4 findings, got %d", len(findings))
 	}
 }
+
+// TestIntegrationRunConfigExclude verifies that configuration exclusions suppress findings.
+func TestIntegrationRunConfigExclude(t *testing.T) {
+	tmp := t.TempDir()
+	badSrc := testDataPath("Dockerfile.bad")
+	badDst := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(badSrc)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	if err := os.WriteFile(badDst, b, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cfgPath := filepath.Join(tmp, ".docker-lint.yaml")
+	cfgSrc := "exclude:\n  Dockerfile.bad:\n    - DL3007\n"
+	if err := os.WriteFile(cfgPath, []byte(cfgSrc), 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd: %v", err)
+	}
+	defer os.Chdir(wd)
+	if err := os.Chdir(tmp); err != nil {
+		t.Fatalf("chdir: %v", err)
+	}
+	var out bytes.Buffer
+	if err := run([]string{"Dockerfile.bad"}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
+		t.Fatalf("expected DL3043, got %s", findings[0].RuleID)
+	}
+}

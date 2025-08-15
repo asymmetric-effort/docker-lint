@@ -7,6 +7,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/moby/buildkit v0.23.2
 	github.com/sam-caldwell/ansi v1.0.3
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
