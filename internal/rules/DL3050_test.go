@@ -3,20 +3,20 @@
 package rules
 
 import (
-        "context"
-        "strings"
-        "testing"
+	"context"
+	"strings"
+	"testing"
 
-        "github.com/moby/buildkit/frontend/dockerfile/parser"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-        "github.com/asymmetric-effort/docker-lint/internal/ir"
+	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
 // TestIntegrationSuperfluousLabelsID validates rule identity.
 func TestIntegrationSuperfluousLabelsID(t *testing.T) {
-        if NewSuperfluousLabels(nil, true).ID() != "DL3050" {
-                t.Fatalf("unexpected id")
-        }
+	if NewSuperfluousLabels(nil, true).ID() != "DL3050" {
+		t.Fatalf("unexpected id")
+	}
 }
 
 // TestIntegrationSuperfluousLabelsViolation reports unknown labels in strict mode.
@@ -36,9 +36,9 @@ func TestIntegrationSuperfluousLabelsViolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationSuperfluousLabelsClean ensures known labels pass in strict mode.
@@ -58,9 +58,9 @@ func TestIntegrationSuperfluousLabelsClean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 0 {
-                t.Fatalf("expected no findings, got %d", len(findings))
-        }
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
 }
 
 // TestIntegrationSuperfluousLabelsNonStrict allows unknown labels in non-strict mode.
@@ -79,9 +79,9 @@ func TestIntegrationSuperfluousLabelsNonStrict(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 0 {
-                t.Fatalf("expected no findings, got %d", len(findings))
-        }
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
 }
 
 // TestIntegrationSuperfluousLabelsNilDocument ensures nil documents are handled gracefully.

@@ -3,20 +3,20 @@
 package rules
 
 import (
-        "context"
-        "strings"
-        "testing"
+	"context"
+	"strings"
+	"testing"
 
-        "github.com/moby/buildkit/frontend/dockerfile/parser"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-        "github.com/asymmetric-effort/docker-lint/internal/ir"
+	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
 // TestIntegrationLabelTimeRFC3339ID validates rule identity.
 func TestIntegrationLabelTimeRFC3339ID(t *testing.T) {
-        if NewLabelTimeRFC3339(nil).ID() != "DL3053" {
-                t.Fatalf("unexpected id")
-        }
+	if NewLabelTimeRFC3339(nil).ID() != "DL3053" {
+		t.Fatalf("unexpected id")
+	}
 }
 
 // TestIntegrationLabelTimeRFC3339Violation detects non-RFC3339 timestamps.
@@ -36,9 +36,9 @@ func TestIntegrationLabelTimeRFC3339Violation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelTimeRFC3339Clean ensures valid timestamps pass.
@@ -58,9 +58,9 @@ func TestIntegrationLabelTimeRFC3339Clean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 0 {
-                t.Fatalf("expected no findings, got %d", len(findings))
-        }
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelTimeRFC3339NilDocument ensures nil documents are handled gracefully.

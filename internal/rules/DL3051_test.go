@@ -3,20 +3,20 @@
 package rules
 
 import (
-        "context"
-        "strings"
-        "testing"
+	"context"
+	"strings"
+	"testing"
 
-        "github.com/moby/buildkit/frontend/dockerfile/parser"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-        "github.com/asymmetric-effort/docker-lint/internal/ir"
+	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
 // TestIntegrationLabelNotEmptyID validates rule identity.
 func TestIntegrationLabelNotEmptyID(t *testing.T) {
-        if NewLabelNotEmpty(nil).ID() != "DL3051" {
-                t.Fatalf("unexpected id")
-        }
+	if NewLabelNotEmpty(nil).ID() != "DL3051" {
+		t.Fatalf("unexpected id")
+	}
 }
 
 // TestIntegrationLabelNotEmptyViolation detects empty label values.
@@ -36,9 +36,9 @@ func TestIntegrationLabelNotEmptyViolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelNotEmptyClean ensures populated values pass.
@@ -58,9 +58,9 @@ func TestIntegrationLabelNotEmptyClean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 0 {
-                t.Fatalf("expected no findings, got %d", len(findings))
-        }
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelNotEmptyWhitespace flags values containing only whitespace.
@@ -80,9 +80,9 @@ func TestIntegrationLabelNotEmptyWhitespace(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelNotEmptyOverwrite verifies later non-empty labels override earlier empty ones.
@@ -119,9 +119,9 @@ func TestIntegrationLabelNotEmptyOverwrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelNotEmptyNilDocument ensures nil documents are handled gracefully.

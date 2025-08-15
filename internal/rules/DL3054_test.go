@@ -3,20 +3,20 @@
 package rules
 
 import (
-        "context"
-        "strings"
-        "testing"
+	"context"
+	"strings"
+	"testing"
 
-        "github.com/moby/buildkit/frontend/dockerfile/parser"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-        "github.com/asymmetric-effort/docker-lint/internal/ir"
+	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
 // TestIntegrationLabelSPDXValidID validates rule identity.
 func TestIntegrationLabelSPDXValidID(t *testing.T) {
-        if NewLabelSPDXValid(nil).ID() != "DL3054" {
-                t.Fatalf("unexpected id")
-        }
+	if NewLabelSPDXValid(nil).ID() != "DL3054" {
+		t.Fatalf("unexpected id")
+	}
 }
 
 // TestIntegrationLabelSPDXValidViolation detects invalid SPDX license identifiers.
@@ -36,9 +36,9 @@ func TestIntegrationLabelSPDXValidViolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelSPDXValidClean ensures valid SPDX identifiers pass.
@@ -58,9 +58,9 @@ func TestIntegrationLabelSPDXValidClean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 0 {
-                t.Fatalf("expected no findings, got %d", len(findings))
-        }
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelSPDXValidNilDocument ensures nil documents are handled gracefully.

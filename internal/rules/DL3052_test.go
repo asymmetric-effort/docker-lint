@@ -3,20 +3,20 @@
 package rules
 
 import (
-        "context"
-        "strings"
-        "testing"
+	"context"
+	"strings"
+	"testing"
 
-        "github.com/moby/buildkit/frontend/dockerfile/parser"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-        "github.com/asymmetric-effort/docker-lint/internal/ir"
+	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
 // TestIntegrationLabelURLValidID validates rule identity.
 func TestIntegrationLabelURLValidID(t *testing.T) {
-        if NewLabelURLValid(nil).ID() != "DL3052" {
-                t.Fatalf("unexpected id")
-        }
+	if NewLabelURLValid(nil).ID() != "DL3052" {
+		t.Fatalf("unexpected id")
+	}
 }
 
 // TestIntegrationLabelURLValidViolation detects malformed URLs.
@@ -36,9 +36,9 @@ func TestIntegrationLabelURLValidViolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 1 {
-                t.Fatalf("expected one finding, got %d", len(findings))
-        }
+	if len(findings) != 1 {
+		t.Fatalf("expected one finding, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelURLValidClean ensures valid URLs pass.
@@ -58,9 +58,9 @@ func TestIntegrationLabelURLValidClean(t *testing.T) {
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
 	}
-        if len(findings) != 0 {
-                t.Fatalf("expected no findings, got %d", len(findings))
-        }
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
 }
 
 // TestIntegrationLabelURLValidNilDocument ensures nil documents are handled gracefully.
