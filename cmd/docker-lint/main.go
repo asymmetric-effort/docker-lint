@@ -8,12 +8,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 
 	doublestar "github.com/bmatcuk/doublestar/v4"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/sam-caldwell/ansi"
 
+	"github.com/asymmetric-effort/docker-lint/internal/config"
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 	"github.com/asymmetric-effort/docker-lint/internal/rules"
@@ -61,6 +63,10 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	if err != nil {
 		return err
 	}
+	cfg, err := config.Load(".docker-lint.yaml")
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
 
 	reg := engine.NewRegistry()
 	reg.Register(rules.NewNoLatestTag())
@@ -78,7 +84,12 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 		if err != nil {
 			return err
 		}
-		all = append(all, fnds...)
+		for _, f := range fnds {
+			if cfg != nil && cfg.IsRuleExcluded(path, f.RuleID) {
+				continue
+			}
+			all = append(all, f)
+		}
 	}
 	if err := json.NewEncoder(out).Encode(all); err != nil {
 		return err

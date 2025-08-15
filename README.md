@@ -29,6 +29,18 @@ Example output:
 ]
 ```
 
+## Configuration
+
+docker-lint reads an optional `.docker-lint.yaml` from the current working directory to configure file-based rule exclusions.
+
+```yaml
+exclude:
+  Dockerfile.dev:
+    - DL3007
+```
+
+The above disables rule `DL3007` for `Dockerfile.dev`.
+
 ## Linting Containers
 
 docker-lint is also published as a container image. This allows you to lint Dockerfiles without installing the binary on your host system. Mount your project directory and provide the Dockerfile path inside the container:
