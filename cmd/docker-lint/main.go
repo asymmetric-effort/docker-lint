@@ -3,18 +3,19 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"os"
+        "context"
+        "encoding/json"
+        "fmt"
+        "io"
+        "os"
 
-	doublestar "github.com/bmatcuk/doublestar/v4"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
+        doublestar "github.com/bmatcuk/doublestar/v4"
+        "github.com/moby/buildkit/frontend/dockerfile/parser"
+        "github.com/sam-caldwell/ansi"
 
-	"github.com/asymmetric-effort/docker-lint/internal/engine"
-	"github.com/asymmetric-effort/docker-lint/internal/ir"
-	"github.com/asymmetric-effort/docker-lint/internal/rules"
+        "github.com/asymmetric-effort/docker-lint/internal/engine"
+        "github.com/asymmetric-effort/docker-lint/internal/ir"
+        "github.com/asymmetric-effort/docker-lint/internal/rules"
 )
 
 // usageText describes the command line usage for the application.
@@ -27,46 +28,90 @@ func printUsage(out io.Writer) {
 
 // main is the CLI entry point.
 func main() {
-	if err := run(os.Args[1:], os.Stdout); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+        color := true
+        var args []string
+        for _, a := range os.Args[1:] {
+                if a == "--no-color" {
+                        color = false
+                        continue
+                }
+                args = append(args, a)
+        }
+        if err := run(args, os.Stdout, os.Stderr, color); err != nil {
+                printError(os.Stderr, color, err)
+                os.Exit(1)
+        }
 }
 
 // run executes the linter for the provided arguments and writes JSON findings.
-func run(args []string, out io.Writer) error {
-	if len(args) < 1 {
-		return fmt.Errorf(usageText)
-	}
-	if args[0] == "-h" || args[0] == "--help" {
-		printUsage(out)
-		return nil
-	}
+//
+// In addition to the JSON output, run emits a human-readable summary to errOut.
+// When color is true, the summary uses ANSI colors.
+func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
+        if len(args) < 1 {
+                return fmt.Errorf(usageText)
+        }
+        if args[0] == "-h" || args[0] == "--help" {
+                printUsage(out)
+                return nil
+        }
 
-	files, err := expandPaths(args)
-	if err != nil {
-		return err
-	}
+        files, err := expandPaths(args)
+        if err != nil {
+                return err
+        }
 
-	reg := engine.NewRegistry()
-	reg.Register(rules.NewNoLatestTag())
-	reg.Register(rules.NewRequireOSVersionTag())
-	reg.Register(rules.NewAptNoInstallRecommends())
-	reg.Register(rules.NewAptPin())
-	reg.Register(rules.NewAptListsCleanup())
-	reg.Register(rules.NewDnfNoUpgrade())
-	reg.Register(rules.NewDnfCacheCleanup())
+        reg := engine.NewRegistry()
+        reg.Register(rules.NewNoLatestTag())
+        reg.Register(rules.NewRequireOSVersionTag())
+        reg.Register(rules.NewAptNoInstallRecommends())
+        reg.Register(rules.NewAptPin())
+        reg.Register(rules.NewAptListsCleanup())
+        reg.Register(rules.NewDnfNoUpgrade())
+        reg.Register(rules.NewDnfCacheCleanup())
 
-	ctx := context.Background()
-	var all []engine.Finding
-	for _, path := range files {
-		fnds, err := lintFile(ctx, reg, path)
-		if err != nil {
-			return err
-		}
-		all = append(all, fnds...)
-	}
-	return json.NewEncoder(out).Encode(all)
+        ctx := context.Background()
+        var all []engine.Finding
+        for _, path := range files {
+                fnds, err := lintFile(ctx, reg, path)
+                if err != nil {
+                        return err
+                }
+                all = append(all, fnds...)
+        }
+        if err := json.NewEncoder(out).Encode(all); err != nil {
+                return err
+        }
+        printFindings(errOut, all, color)
+        return nil
+}
+
+// printFindings writes a human-readable summary of findings to errOut.
+func printFindings(errOut io.Writer, fnds []engine.Finding, color bool) {
+        if len(fnds) == 0 {
+                if color {
+                        fmt.Fprintf(errOut, "%sNo issues found%s\n", ansi.CodeFgGreen, ansi.CodeReset)
+                } else {
+                        fmt.Fprintln(errOut, "No issues found")
+                }
+                return
+        }
+        for _, f := range fnds {
+                if color {
+                        fmt.Fprintf(errOut, "%s%s (rule: %s, line: %d)%s\n", ansi.CodeFgYellow, f.Message, f.RuleID, f.Line, ansi.CodeReset)
+                } else {
+                        fmt.Fprintf(errOut, "%s (rule: %s, line: %d)\n", f.Message, f.RuleID, f.Line)
+                }
+        }
+}
+
+// printError writes an error message to errOut, optionally colorized.
+func printError(errOut io.Writer, color bool, err error) {
+        if color {
+                fmt.Fprintf(errOut, "%s%v%s\n", ansi.CodeFgRed, err, ansi.CodeReset)
+        } else {
+                fmt.Fprintln(errOut, err)
+        }
 }
 
 // expandPaths resolves glob patterns into file paths.

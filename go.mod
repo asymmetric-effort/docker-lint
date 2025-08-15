@@ -6,6 +6,7 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.9.1
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/moby/buildkit v0.23.2
+	github.com/sam-caldwell/ansi v1.0.3
 )
 
 require (
@@ -13,5 +14,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
+	github.com/sam-caldwell/exit v1.0.3 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 )
