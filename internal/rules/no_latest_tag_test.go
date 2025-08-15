@@ -11,13 +11,15 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
-func TestNoLatestTagID(t *testing.T) {
+// TestIntegrationNoLatestTagID validates rule identity.
+func TestIntegrationNoLatestTagID(t *testing.T) {
 	if NewNoLatestTag().ID() != "DL3007" {
 		t.Fatalf("unexpected id")
 	}
 }
 
-func TestNoLatestTagViolation(t *testing.T) {
+// TestIntegrationNoLatestTagViolation detects images using the latest tag.
+func TestIntegrationNoLatestTagViolation(t *testing.T) {
 	r := NewNoLatestTag()
 	doc := &ir.Document{Stages: []*ir.Stage{
 		{Index: 0, From: "alpine", Node: &parser.Node{StartLine: 1}},
@@ -32,7 +34,8 @@ func TestNoLatestTagViolation(t *testing.T) {
 	}
 }
 
-func TestNoLatestTagClean(t *testing.T) {
+// TestIntegrationNoLatestTagClean ensures compliant images pass.
+func TestIntegrationNoLatestTagClean(t *testing.T) {
 	r := NewNoLatestTag()
 	doc := &ir.Document{Stages: []*ir.Stage{{Index: 0, From: "alpine:3.19", Node: &parser.Node{StartLine: 1}}, {Index: 1, From: "ubuntu@sha256:deadbeef", Node: &parser.Node{StartLine: 2}}}}
 	findings, err := r.Check(context.Background(), doc)

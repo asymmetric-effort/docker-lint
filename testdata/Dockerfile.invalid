@@ -1,0 +1,3 @@
+# file: testdata/Dockerfile.invalid
+# (c) 2025 Asymmetric Effort, LLC.
+# no FROM instruction

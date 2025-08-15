@@ -12,13 +12,15 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
-func TestDeprecatedMaintainerID(t *testing.T) {
+// TestIntegrationDeprecatedMaintainerID validates rule identity.
+func TestIntegrationDeprecatedMaintainerID(t *testing.T) {
 	if NewDeprecatedMaintainer().ID() != "DL4000" {
 		t.Fatalf("unexpected id")
 	}
 }
 
-func TestDeprecatedMaintainerViolation(t *testing.T) {
+// TestIntegrationDeprecatedMaintainerViolation detects deprecated MAINTAINER usage.
+func TestIntegrationDeprecatedMaintainerViolation(t *testing.T) {
 	src := "FROM alpine\nMAINTAINER Somebody\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -38,7 +40,8 @@ func TestDeprecatedMaintainerViolation(t *testing.T) {
 	}
 }
 
-func TestDeprecatedMaintainerClean(t *testing.T) {
+// TestIntegrationDeprecatedMaintainerClean ensures compliant Dockerfiles pass.
+func TestIntegrationDeprecatedMaintainerClean(t *testing.T) {
 	src := "FROM alpine\nLABEL maintainer=\"Somebody\"\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -58,8 +61,8 @@ func TestDeprecatedMaintainerClean(t *testing.T) {
 	}
 }
 
-// TestDeprecatedMaintainerCaseInsensitive catches lowercase usage.
-func TestDeprecatedMaintainerCaseInsensitive(t *testing.T) {
+// TestIntegrationDeprecatedMaintainerCaseInsensitive catches lowercase usage.
+func TestIntegrationDeprecatedMaintainerCaseInsensitive(t *testing.T) {
 	src := "FROM alpine\nmaintainer Somebody\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
@@ -79,8 +82,8 @@ func TestDeprecatedMaintainerCaseInsensitive(t *testing.T) {
 	}
 }
 
-// TestDeprecatedMaintainerNilDocument ensures graceful handling of nil input.
-func TestDeprecatedMaintainerNilDocument(t *testing.T) {
+// TestIntegrationDeprecatedMaintainerNilDocument ensures graceful handling of nil input.
+func TestIntegrationDeprecatedMaintainerNilDocument(t *testing.T) {
 	r := NewDeprecatedMaintainer()
 	if findings, err := r.Check(context.Background(), nil); err != nil || len(findings) != 0 {
 		t.Fatalf("expected no findings on nil doc: %v %v", findings, err)

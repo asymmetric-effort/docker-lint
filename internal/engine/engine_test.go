@@ -22,8 +22,8 @@ func (s stubRule) Check(ctx context.Context, d *ir.Document) ([]Finding, error) 
 	return s.findings, s.err
 }
 
-// TestRegistryRun verifies successful rule execution.
-func TestRegistryRun(t *testing.T) {
+// TestIntegrationRegistryRun verifies successful rule execution.
+func TestIntegrationRegistryRun(t *testing.T) {
 	r := NewRegistry()
 	r.Register(stubRule{id: "A", findings: []Finding{{RuleID: "A"}}})
 	out, err := r.Run(context.Background(), &ir.Document{})
@@ -35,8 +35,8 @@ func TestRegistryRun(t *testing.T) {
 	}
 }
 
-// TestRegistryRunError ensures errors propagate from rules.
-func TestRegistryRunError(t *testing.T) {
+// TestIntegrationRegistryRunError ensures errors propagate from rules.
+func TestIntegrationRegistryRunError(t *testing.T) {
 	r := NewRegistry()
 	r.Register(stubRule{id: "A", err: errors.New("bad")})
 	if _, err := r.Run(context.Background(), &ir.Document{}); err == nil {
