@@ -10,6 +10,7 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
+	"reflect"
 )
 
 // TestIntegrationPinNpmVersionID validates rule identity.
@@ -69,5 +70,49 @@ func TestIntegrationPinNpmVersionNilDocument(t *testing.T) {
 	}
 	if findings, err := r.Check(context.Background(), &ir.Document{}); err != nil || len(findings) != 0 {
 		t.Fatalf("expected no findings on empty doc: %v %v", findings, err)
+	}
+}
+
+// TestUnitTrimFlag verifies flag normalization.
+func TestUnitTrimFlag(t *testing.T) {
+	cases := map[string]string{
+		"--loglevel":      "loglevel",
+		"--loglevel=info": "loglevel",
+		"-v":              "v",
+	}
+	for in, want := range cases {
+		if got := trimFlag(in); got != want {
+			t.Fatalf("trimFlag(%q)=%q, want %q", in, got, want)
+		}
+	}
+}
+
+// TestUnitNpmInstallPackages validates package extraction.
+func TestUnitNpmInstallPackages(t *testing.T) {
+	tokens := []string{"npm", "--loglevel", "warn", "install", "--loglevel", "info", "left", "--loglevel=warn", "right"}
+	pkgs := npmInstallPackages(tokens)
+	if !reflect.DeepEqual(pkgs, []string{"left", "right"}) {
+		t.Fatalf("unexpected packages: %#v", pkgs)
+	}
+}
+
+// TestUnitNpmVersionFixed exercises version detection logic.
+func TestUnitNpmVersionFixed(t *testing.T) {
+	cases := []struct {
+		pkg  string
+		want bool
+	}{
+		{"express@1.0.0", true},
+		{"@scope/pkg@2.3.4", true},
+		{"git://example.com/repo.git#v1.0.0", true},
+		{"git://example.com/repo.git", false},
+		{"https://example.com/pkg.tgz", true},
+		{"./localdir", true},
+		{"express", false},
+	}
+	for _, c := range cases {
+		if got := npmVersionFixed(c.pkg); got != c.want {
+			t.Fatalf("npmVersionFixed(%q)=%v, want %v", c.pkg, got, c.want)
+		}
 	}
 }
