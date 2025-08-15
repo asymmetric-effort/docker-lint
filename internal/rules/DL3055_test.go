@@ -12,24 +12,25 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
 
-func TestLabelGitHashValidID(t *testing.T) {
-	if NewLabelGitHashValid(nil).ID() != "DL3055" {
+// TestStageDigestPinnedID verifies rule identity.
+func TestStageDigestPinnedID(t *testing.T) {
+	if NewStageDigestPinned(nil).ID() != "DL3055" {
 		t.Fatalf("unexpected id")
 	}
 }
 
-func TestLabelGitHashValidViolation(t *testing.T) {
-	src := "FROM scratch\nLABEL commit=xyz\n"
+// TestStageDigestPinnedViolation detects unpinned stage images.
+func TestStageDigestPinnedViolation(t *testing.T) {
+	src := "FROM alpine AS build\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
 		t.Fatalf("parse failed: %v", err)
 	}
 	doc, err := ir.BuildDocument("Dockerfile", res.AST)
 	if err != nil {
-		t.Fatalf("build document: %v", err)
+		t.Fatalf("build doc: %v", err)
 	}
-	schema := LabelSchema{"commit": LabelTypeGitHash}
-	r := NewLabelGitHashValid(schema)
+	r := NewStageDigestPinned([]string{"build"})
 	findings, err := r.Check(context.Background(), doc)
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
@@ -39,18 +40,18 @@ func TestLabelGitHashValidViolation(t *testing.T) {
 	}
 }
 
-func TestLabelGitHashValidClean(t *testing.T) {
-	src := "FROM scratch\nLABEL commit=0123456789abcdef0123456789abcdef01234567\n"
+// TestStageDigestPinnedClean allows digest-pinned stages.
+func TestStageDigestPinnedClean(t *testing.T) {
+	src := "FROM alpine@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa AS build\n"
 	res, err := parser.Parse(strings.NewReader(src))
 	if err != nil {
 		t.Fatalf("parse failed: %v", err)
 	}
 	doc, err := ir.BuildDocument("Dockerfile", res.AST)
 	if err != nil {
-		t.Fatalf("build document: %v", err)
+		t.Fatalf("build doc: %v", err)
 	}
-	schema := LabelSchema{"commit": LabelTypeGitHash}
-	r := NewLabelGitHashValid(schema)
+	r := NewStageDigestPinned([]string{"build"})
 	findings, err := r.Check(context.Background(), doc)
 	if err != nil {
 		t.Fatalf("check failed: %v", err)
@@ -60,9 +61,13 @@ func TestLabelGitHashValidClean(t *testing.T) {
 	}
 }
 
-func TestLabelGitHashValidNilDocument(t *testing.T) {
-	r := NewLabelGitHashValid(nil)
+// TestStageDigestPinnedNilDocument ensures nil documents are handled.
+func TestStageDigestPinnedNilDocument(t *testing.T) {
+	r := NewStageDigestPinned([]string{"build"})
 	if f, err := r.Check(context.Background(), nil); err != nil || len(f) != 0 {
 		t.Fatalf("expected no findings on nil doc: %v %v", f, err)
+	}
+	if f, err := r.Check(context.Background(), &ir.Document{}); err != nil || len(f) != 0 {
+		t.Fatalf("expected no findings on empty doc: %v %v", f, err)
 	}
 }
