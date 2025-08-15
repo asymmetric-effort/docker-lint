@@ -61,6 +61,27 @@ func TestIntegrationValidPortRangeClean(t *testing.T) {
 	}
 }
 
+// TestIntegrationValidPortRangeNamedPort ensures non-numeric ports are ignored.
+func TestIntegrationValidPortRangeNamedPort(t *testing.T) {
+	src := "FROM alpine\nEXPOSE http 80\n"
+	res, err := parser.Parse(strings.NewReader(src))
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	doc, err := ir.BuildDocument("Dockerfile", res.AST)
+	if err != nil {
+		t.Fatalf("build document: %v", err)
+	}
+	r := NewValidPortRange()
+	findings, err := r.Check(context.Background(), doc)
+	if err != nil {
+		t.Fatalf("check failed: %v", err)
+	}
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings, got %d", len(findings))
+	}
+}
+
 // TestIntegrationValidPortRangeNilDocument ensures graceful handling of nil input.
 func TestIntegrationValidPortRangeNilDocument(t *testing.T) {
 	r := NewValidPortRange()
