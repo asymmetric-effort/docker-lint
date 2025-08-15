@@ -7,6 +7,9 @@ all: clean lint test build
 ## Run golangci-lint to lint the codebase
 lint:
 	go vet ./...
+	command -v staticcheck || go install honnef.co/go/tools/cmd/staticcheck@latest
+	staticcheck ./...
+
 
 ## Run unit and integration tests with coverage
 ## Ensures integration coverage is at least 80%
