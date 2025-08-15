@@ -31,3 +31,17 @@ def test_build_site_generates_html(tmp_path: Path) -> None:
     assert (out / "docs" / "a.html").exists()
     assert (out / "index.html").exists()
     assert (out / "license.html").exists()
+
+
+def test_build_site_adds_seo_metadata(tmp_path: Path) -> None:
+    """Generated pages should include basic SEO meta tags."""
+    src = tmp_path
+    (src / "docs").mkdir()
+    (src / "docs" / "a.md").write_text("# A\n\nAbout A", encoding="utf-8")
+    (src / "README.md").write_text("# R\n\nAbout R", encoding="utf-8")
+    (src / "LICENSE").write_text("MIT", encoding="utf-8")
+    out = src / "site"
+    build_site(src, out)
+    html = (out / "README.html").read_text(encoding="utf-8")
+    assert "<title>R | docker-lint</title>" in html
+    assert '<meta name="description" content="About R"' in html
