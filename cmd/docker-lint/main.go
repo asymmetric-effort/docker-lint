@@ -71,7 +71,7 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 		}
 	}
 	if len(files) == 0 {
-		return fmt.Errorf(usageText)
+		return errors.New(usageText)
 	}
 
 	var cfg *config.Config
