@@ -83,3 +83,5 @@ make build   # Build the docker-lint binary
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
+(c) 2025 Asymmetric Effort, LLC. <scaldwell@asymmetric-effort.com>
+[<img src="docs/img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60">](https://asymmetric-effort.com/)

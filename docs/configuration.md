@@ -33,3 +33,6 @@ label-schema:
 
 See the [hadolint documentation](https://github.com/hadolint/hadolint#configure) for the meaning of these fields. Docker-lint
 currently honours the `ignored` list and parses the remaining fields for forward compatibility.
+
+(c) 2025 Asymmetric Effort, LLC. <scaldwell@asymmetric-effort.com>
+[<img src="img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60">](https://asymmetric-effort.com/)
