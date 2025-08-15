@@ -3,10 +3,12 @@
 package rules
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -27,8 +29,15 @@ func TestRuleDocsExist(t *testing.T) {
 			continue
 		}
 		doc := filepath.Join(docDir, name[:len(name)-3]+".md")
-		if _, err := os.Stat(doc); err != nil {
+		content, err := os.ReadFile(doc)
+		if err != nil {
 			t.Errorf("missing documentation for %s", name)
+			continue
+		}
+		headerRe := regexp.MustCompile(fmt.Sprintf(`^#\s+%s\b`, name[:len(name)-3]))
+		lines := strings.Split(string(content), "\n")
+		if len(lines) == 0 || !headerRe.MatchString(lines[0]) {
+			t.Errorf("documentation for %s missing header '# %s'", name, name[:len(name)-3])
 		}
 	}
 }
