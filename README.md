@@ -1,3 +1,5 @@
+![docker-lint icon](docs/img/docker-linter.png)
+
 # docker-lint
 
 Docker-lint is a minimal linter for Dockerfiles. It parses a Dockerfile using the BuildKit parser, normalizes stages into an intermediate representation, and evaluates a set of rules to report potential issues.
