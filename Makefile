@@ -11,7 +11,8 @@ lint:
 test:
 	go test ./... -short -cover
 	go test ./... -run Integration -covermode=atomic -coverpkg=./... -coverprofile=coverage.out
-	go tool cover -func=coverage.out | awk '/total:/ { print; if ($3+0 < 80) exit 1 }'
+	go tool cover -func=coverage.out | awk '/total:/ { print; if ($$3+0 < 80) exit 1 }'
+	go test -run=^$$ -bench=. ./...
 
 ## Build the docker-lint binary
 build:
