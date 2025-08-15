@@ -22,9 +22,13 @@ The following Hadolint-compatible rules are implemented:
 - [DL3021](DL3021.md) - COPY with more than 2 arguments requires the last argument to end with /.
 
 - [DL3040](DL3040.md) - dnf clean all missing after dnf command.
-
 - [DL3041](DL3041.md) - Avoid dnf upgrade or update in Dockerfiles.
+- [DL3042](DL3042.md) - Combine consecutive RUN instructions that use the same package manager.
+- [DL3043](DL3043.md) - Specify OS version tag for base images.
+- [DL3044](DL3044.md) - Specify version with dnf/microdnf install.
+
 - [DL3046](DL3046.md) - Avoid apk upgrade in Dockerfiles.
+
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 
 
