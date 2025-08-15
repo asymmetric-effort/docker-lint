@@ -10,10 +10,11 @@ go install github.com/asymmetric-effort/docker-lint/cmd/docker-lint@latest
 
 ## Usage
 
-Provide the path to a Dockerfile. Findings are emitted as a JSON array to standard output.
+Provide one or more paths or glob patterns (supports `*` and `**`). Matching files are linted and findings are emitted as a JSON array to standard output.
 
 ```bash
 docker-lint /path/to/Dockerfile
+docker-lint './**/Dockerfile'
 ```
 
 Example output:

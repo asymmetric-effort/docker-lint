@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 
+	doublestar "github.com/bmatcuk/doublestar/v4"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
@@ -41,22 +42,8 @@ func run(args []string, out io.Writer) error {
 		printUsage(out)
 		return nil
 	}
-	f, err := os.Open(args[0])
-	if err != nil {
-		return err
-	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-		}
-	}(f)
 
-	res, err := parser.Parse(f)
-	if err != nil {
-		return err
-	}
-	doc, err := ir.BuildDocument(args[0], res.AST)
+	files, err := expandPaths(args)
 	if err != nil {
 		return err
 	}
@@ -64,9 +51,53 @@ func run(args []string, out io.Writer) error {
 	reg := engine.NewRegistry()
 	reg.Register(rules.NewNoLatestTag())
 
-	findings, err := reg.Run(context.Background(), doc)
-	if err != nil {
-		return err
+	ctx := context.Background()
+	var all []engine.Finding
+	for _, path := range files {
+		fnds, err := lintFile(ctx, reg, path)
+		if err != nil {
+			return err
+		}
+		all = append(all, fnds...)
 	}
-	return json.NewEncoder(out).Encode(findings)
+	return json.NewEncoder(out).Encode(all)
+}
+
+// expandPaths resolves glob patterns into file paths.
+func expandPaths(patterns []string) ([]string, error) {
+	var files []string
+	for _, p := range patterns {
+		matches, err := doublestar.FilepathGlob(p)
+		if err != nil {
+			return nil, err
+		}
+		if len(matches) == 0 {
+			files = append(files, p)
+			continue
+		}
+		files = append(files, matches...)
+	}
+	return files, nil
+}
+
+// lintFile lints a single Dockerfile and returns any findings.
+func lintFile(ctx context.Context, reg *engine.Registry, path string) (fnds []engine.Finding, err error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if cerr := f.Close(); err == nil && cerr != nil {
+			err = cerr
+		}
+	}()
+	res, err := parser.Parse(f)
+	if err != nil {
+		return nil, err
+	}
+	doc, err := ir.BuildDocument(path, res.AST)
+	if err != nil {
+		return nil, err
+	}
+	return reg.Run(ctx, doc)
 }

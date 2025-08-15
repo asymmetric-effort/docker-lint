@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"errors"
 	"io/fs"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -93,5 +95,80 @@ func TestIntegrationRunInvalidDockerfile(t *testing.T) {
 	var out bytes.Buffer
 	if err := run([]string{df}, &out); err == nil {
 		t.Fatalf("expected parse error, got nil")
+	}
+}
+
+// TestIntegrationRunGlob verifies that run processes files matching single-star patterns.
+func TestIntegrationRunGlob(t *testing.T) {
+	tmp := t.TempDir()
+	goodSrc := testDataPath("Dockerfile.good")
+	badSrc := testDataPath("Dockerfile.bad")
+
+	goodDst := filepath.Join(tmp, "Dockerfile.good")
+	badDst := filepath.Join(tmp, "Dockerfile.bad")
+
+	g, err := os.ReadFile(goodSrc)
+	if err != nil {
+		t.Fatalf("read good: %v", err)
+	}
+	if err := os.WriteFile(goodDst, g, 0o644); err != nil {
+		t.Fatalf("write good: %v", err)
+	}
+	b, err := os.ReadFile(badSrc)
+	if err != nil {
+		t.Fatalf("read bad: %v", err)
+	}
+	if err := os.WriteFile(badDst, b, 0o644); err != nil {
+		t.Fatalf("write bad: %v", err)
+	}
+
+	pattern := filepath.Join(tmp, "Dockerfile.*")
+	var out bytes.Buffer
+	if err := run([]string{pattern}, &out); err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+}
+
+// TestIntegrationRunDoubleStar verifies that run processes files matching recursive patterns.
+func TestIntegrationRunDoubleStar(t *testing.T) {
+	tmp := t.TempDir()
+	nested := filepath.Join(tmp, "a", "b")
+	if err := os.MkdirAll(nested, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+
+	badSrc := testDataPath("Dockerfile.bad")
+	rootDst := filepath.Join(tmp, "Dockerfile.bad")
+	nestedDst := filepath.Join(nested, "Dockerfile.bad")
+
+	b, err := os.ReadFile(badSrc)
+	if err != nil {
+		t.Fatalf("read bad: %v", err)
+	}
+	if err := os.WriteFile(rootDst, b, 0o644); err != nil {
+		t.Fatalf("write root: %v", err)
+	}
+	if err := os.WriteFile(nestedDst, b, 0o644); err != nil {
+		t.Fatalf("write nested: %v", err)
+	}
+
+	pattern := filepath.Join(tmp, "**", "Dockerfile.bad")
+	var out bytes.Buffer
+	if err := run([]string{pattern}, &out); err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 2 {
+		t.Fatalf("expected 2 findings, got %d", len(findings))
 	}
 }
