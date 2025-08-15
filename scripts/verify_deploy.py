@@ -1,9 +1,10 @@
 # file: scripts/verify_deploy.py
 # (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
-"""Selenium-based post-deployment verification for docker-lint site."""
+"""Selenium-based post-deployment verification for the deploy-lint site."""
 
 from __future__ import annotations
 
+import os
 import sys
 import time
 from selenium import webdriver
@@ -11,17 +12,22 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-URL = "https://docker-lint.asymmetric-effort.com"
+DEFAULT_URL = "https://deploy-lint.asymmetric-effort.com"
 
 
-def check_commit(commit: str, retries: int = 5, delay: int = 5) -> bool:
-    """Return True if site loads with matching commit hash."""
+def create_driver() -> webdriver.Chrome:
+    """Return a headless Chrome WebDriver instance."""
     options = Options()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    return webdriver.Chrome(ChromeDriverManager().install(), options=options)
+
+
+def check_commit(url: str, commit: str, retries: int = 5, delay: int = 5) -> bool:
+    """Return True if *url* loads with matching commit hash."""
+    driver = create_driver()
     try:
         for _ in range(retries):
-            driver.get(URL)
+            driver.get(url)
             try:
                 meta = driver.find_element(By.CSS_SELECTOR, "meta[name='docker-lint:commit']")
                 if meta.get_attribute("content") == commit:
@@ -39,7 +45,8 @@ def main() -> None:
     if len(sys.argv) != 2:
         raise SystemExit("usage: verify_deploy.py <commit>")
     commit = sys.argv[1]
-    if not check_commit(commit):
+    url = os.environ.get("VERIFY_URL", DEFAULT_URL)
+    if not check_commit(url, commit):
         raise SystemExit("deployment verification failed")
 
 

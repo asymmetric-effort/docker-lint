@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -44,9 +44,9 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/pages \
-            -d '{"cname":"docker-lint.asymmetric-effort.com"}'
+            -d '{"cname":"deploy-lint.asymmetric-effort.com"}'
   post-deploy-verification:
-    needs: build
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -63,5 +63,6 @@ jobs:
       - name: Verify deployment
         env:
           COMMIT_HASH: ${{ github.sha }}
+          VERIFY_URL: https://deploy-lint.asymmetric-effort.com
         run: |
           python scripts/verify_deploy.py "$COMMIT_HASH"

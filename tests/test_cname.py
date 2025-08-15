@@ -11,4 +11,4 @@ def test_cname_file_contains_expected_domain() -> None:
     cname_path = Path("docs") / "CNAME"
     assert cname_path.exists(), "CNAME file missing"
     content = cname_path.read_text(encoding="utf-8").strip()
-    assert content == "docker-lint.asymmetric-effort.com"
+    assert content == "deploy-lint.asymmetric-effort.com"
