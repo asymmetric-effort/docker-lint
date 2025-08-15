@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 
 	doublestar "github.com/bmatcuk/doublestar/v4"
@@ -72,23 +71,23 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 		}
 	}
 	if len(files) == 0 {
-		return fmt.Errorf(usageText)
+		return errors.New(usageText)
 	}
 
-	var cfg config.Config
+	var cfg *config.Config
 	if configPath != "" {
 		c, err := config.Load(configPath)
 		if err != nil {
 			return err
 		}
-		cfg = *c
+		cfg = c
 	} else {
 		if _, err := os.Stat(".docker-lint.yaml"); err == nil {
 			c, err := config.Load(".docker-lint.yaml")
 			if err != nil {
 				return err
 			}
-			cfg = *c
+			cfg = c
 		} else if err != nil && !errors.Is(err, os.ErrNotExist) {
 			return err
 		}
@@ -98,13 +97,13 @@ func run(args []string, out io.Writer, errOut io.Writer, color bool) error {
 	if err != nil {
 		return err
 	}
-	cfg, err := config.Load(".docker-lint.yaml")
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return err
-	}
 
 	reg := engine.NewRegistry()
-	registerRules(reg, cfg.Exclusions)
+	if cfg != nil {
+		registerRules(reg, cfg.Exclusions)
+	} else {
+		registerRules(reg, nil)
+	}
 
 	ctx := context.Background()
 	var all []engine.Finding

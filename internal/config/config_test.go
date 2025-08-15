@@ -25,6 +25,9 @@ func TestLoad(t *testing.T) {
 	}
 	if cfg.Exclusions[0] != "DL3007" || cfg.Exclusions[1] != "DL3043" {
 		t.Fatalf("unexpected exclusions: %v", cfg.Exclusions)
+	}
+}
+
 // TestLoadAndIsRuleExcluded verifies configuration loading and exclusion checks.
 func TestLoadAndIsRuleExcluded(t *testing.T) {
 	tmp := t.TempDir()
