@@ -26,6 +26,8 @@ The following Hadolint-compatible rules are implemented:
 - [DL3042](DL3042.md) - Combine consecutive RUN instructions that use the same package manager.
 - [DL3043](DL3043.md) - Specify OS version tag for base images.
 
+- [DL3050](dl3050.md) - Superfluous label(s) present.
+
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 
 
