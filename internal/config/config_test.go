@@ -61,3 +61,30 @@ func TestIsIgnored(t *testing.T) {
 		t.Fatalf("unexpected ignore")
 	}
 }
+
+// TestLoadMissingFile ensures Load returns an error when the file is absent.
+func TestLoadMissingFile(t *testing.T) {
+	if _, err := Load("non-existent.yaml"); err == nil {
+		t.Fatalf("expected error for missing file")
+	}
+}
+
+// TestLoadInvalidYAML ensures Load surfaces YAML parsing errors.
+func TestLoadInvalidYAML(t *testing.T) {
+	tmp := t.TempDir()
+	path := filepath.Join(tmp, "cfg.yaml")
+	if err := os.WriteFile(path, []byte("::notyaml"), 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	if _, err := Load(path); err == nil {
+		t.Fatalf("expected parse error")
+	}
+}
+
+// TestIsIgnoredNilConfig verifies that a nil Config does not ignore rules.
+func TestIsIgnoredNilConfig(t *testing.T) {
+	var cfg *Config
+	if cfg.IsIgnored("DL3007") {
+		t.Fatalf("expected nil config to not ignore")
+	}
+}
