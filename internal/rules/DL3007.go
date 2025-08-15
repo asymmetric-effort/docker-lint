@@ -1,13 +1,15 @@
-// file: internal/rules/DL3007.go
-// (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
 package rules
+
+/*
+ * file: internal/rules/DL3007.go
+ * (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
+ */
 
 import (
 	"context"
-	"strings"
-
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
+	"strings"
 )
 
 // noLatestTag ensures FROM instructions avoid implicit or latest tags.
