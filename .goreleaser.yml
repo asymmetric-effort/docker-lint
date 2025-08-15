@@ -1,3 +1,5 @@
+# file: .goreleaser.yml
+# (c) 2025 Asymmetric Effort, LLC. scaldwell@asymmetric-effort.com
 version: 2
 project_name: docker-lint
 
@@ -61,3 +63,15 @@ chocolateys:
     project_url: https://github.com/asymmetric-effort/docker-lint
     license_url: https://github.com/asymmetric-effort/docker-lint/blob/main/LICENSE
     ids: [windows]
+
+signs:
+  - artifacts: all
+    cmd: gpg
+    args:
+      - "--batch"
+      - "--local-user"
+      - "github@samcaldwell.net"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
