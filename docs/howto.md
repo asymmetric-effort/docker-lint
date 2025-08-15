@@ -22,3 +22,6 @@ docker-lint --version
 docker-lint -version
 docker-lint version
 ```
+
+(c) 2025 Asymmetric Effort, LLC. <scaldwell@asymmetric-effort.com>
+[<img src="img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60">](https://asymmetric-effort.com/)
