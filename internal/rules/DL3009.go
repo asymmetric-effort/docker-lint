@@ -32,7 +32,7 @@ func (aptListsCleanup) Check(ctx context.Context, d *ir.Document) ([]engine.Find
 		if !strings.EqualFold(n.Value, "run") {
 			continue
 		}
-		segments := splitRunSegments(n)
+		segments := lowerSegments(splitRunSegments(n))
 		if needsAptListsCleanup(segments) {
 			findings = append(findings, engine.Finding{
 				RuleID:  "DL3009",

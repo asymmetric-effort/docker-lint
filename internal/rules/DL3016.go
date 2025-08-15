@@ -32,7 +32,7 @@ func (pinNpmVersion) Check(ctx context.Context, d *ir.Document) ([]engine.Findin
 		if !strings.EqualFold(n.Value, "run") {
 			continue
 		}
-		segments := splitRunSegments(n)
+		segments := splitRunSegmentsNpm(n)
 		for _, seg := range segments {
 			if len(seg) == 0 {
 				continue
@@ -89,6 +89,42 @@ func npmInstallPackages(tokens []string) []string {
 		i++
 	}
 	return packages
+}
+
+// splitRunSegmentsNpm tokenizes a RUN node and splits it into command segments.
+func splitRunSegmentsNpm(n *parser.Node) [][]string {
+	if n == nil || n.Next == nil {
+		return nil
+	}
+	var tokens []string
+	if n.Attributes != nil && n.Attributes["json"] {
+		for tok := n.Next; tok != nil; tok = tok.Next {
+			tokens = append(tokens, tok.Value)
+		}
+	} else {
+		t, err := shlex.Split(n.Next.Value)
+		if err != nil {
+			return nil
+		}
+		tokens = t
+	}
+	var segments [][]string
+	var current []string
+	for _, tok := range tokens {
+		switch tok {
+		case "&&", "||", "|", ";":
+			if len(current) > 0 {
+				segments = append(segments, current)
+				current = nil
+			}
+		default:
+			current = append(current, tok)
+		}
+	}
+	if len(current) > 0 {
+		segments = append(segments, current)
+	}
+	return segments
 }
 
 // allVersionFixed returns true if all packages specify a version, tag, or commit.
