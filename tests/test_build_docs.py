@@ -19,11 +19,13 @@ def test_collect_markdown_files(tmp_path: Path) -> None:
 
 
 def test_build_site_generates_html(tmp_path: Path) -> None:
-    """build_site should emit html pages and an index."""
+    """build_site should emit html pages, assets, and an index."""
     src = tmp_path
-    (src / "docs").mkdir()
+    (src / "docs" / "img").mkdir(parents=True)
+    (src / "docs" / "img" / "docker-linter.png").write_bytes(b"icon")
+    (src / "docs" / "img" / "favicon.ico").write_bytes(b"icon")
     (src / "docs" / "a.md").write_text("# A", encoding="utf-8")
-    (src / "README.md").write_text("# R", encoding="utf-8")
+    (src / "README.md").write_text("![icon](docs/img/docker-linter.png)\n# R", encoding="utf-8")
     (src / "LICENSE").write_text("MIT", encoding="utf-8")
     out = src / "site"
     build_site(src, out)
@@ -31,3 +33,14 @@ def test_build_site_generates_html(tmp_path: Path) -> None:
     assert (out / "docs" / "a.html").exists()
     assert (out / "index.html").exists()
     assert (out / "license.html").exists()
+    assert (out / "img" / "docker-linter.png").exists()
+    assert (out / "img" / "favicon.ico").exists()
+    assert (out / "docs" / "img" / "docker-linter.png").exists()
+    assert (out / "docs" / "img" / "favicon.ico").exists()
+    readme_html = (out / "README.html").read_text(encoding="utf-8")
+    assert '<img src="img/docker-linter.png"' in readme_html
+    assert '<link rel="icon" href="img/favicon.ico"' in readme_html
+    assert 'src="docs/img/docker-linter.png"' in readme_html
+    nested_html = (out / "docs" / "a.html").read_text(encoding="utf-8")
+    assert '<img src="../img/docker-linter.png"' in nested_html
+    assert '<link rel="icon" href="../img/favicon.ico"' in nested_html
