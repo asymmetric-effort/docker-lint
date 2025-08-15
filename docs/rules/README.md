@@ -27,6 +27,8 @@ The following Hadolint-compatible rules are implemented:
 - [DL3043](DL3043.md) - Specify OS version tag for base images.
 - [DL3044](DL3044.md) - Specify version with dnf/microdnf install.
 
+- [DL3046](DL3046.md) - Avoid apk upgrade in Dockerfiles.
+
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 
 
