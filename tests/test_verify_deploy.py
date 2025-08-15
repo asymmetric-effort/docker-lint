@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from selenium.webdriver.common.by import By
 
+from scripts import verify_deploy
 from scripts.verify_deploy import check_commit
 
 
@@ -40,6 +41,37 @@ class FakeDriver:
 
     def quit(self) -> None:  # pragma: no cover - trivial
         self.quit_called = True
+
+
+def test_create_driver_uses_service(monkeypatch) -> None:
+    """create_driver should construct webdriver.Chrome with service and options."""
+    called: dict[str, object] = {}
+
+    def fake_install(self) -> str:  # pragma: no cover - simple stub
+        return "/tmp/chromedriver"
+
+    def fake_chrome(*args, **kwargs):  # pragma: no cover - simple stub
+        called["args"] = args
+        called["kwargs"] = kwargs
+
+        class Dummy:
+            def quit(self) -> None:  # pragma: no cover - simple stub
+                pass
+
+        return Dummy()
+
+    monkeypatch.setattr(verify_deploy.ChromeDriverManager, "install", fake_install)
+    monkeypatch.setattr(verify_deploy.webdriver, "Chrome", fake_chrome)
+
+    driver = verify_deploy.create_driver()
+    assert called["args"] == ()
+    assert "service" in called["kwargs"]
+    assert "options" in called["kwargs"]
+    assert isinstance(called["kwargs"]["service"], verify_deploy.Service)
+    assert "--headless=new" in called["kwargs"]["options"].arguments
+
+    # ensure create_driver returns the constructed driver
+    assert hasattr(driver, "quit")
 
 
 def test_check_commit_matches(monkeypatch) -> None:
