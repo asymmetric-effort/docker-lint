@@ -21,3 +21,4 @@ The following Hadolint-compatible rules are implemented:
 - [DL4001](DL4001.md) - Either use Wget or Curl but not both.
 - [DL4005](DL4005.md) - Use SHELL to change the default shell.
 
+- [DL4004](DL4004.md) - Avoid multiple ENTRYPOINT instructions.
