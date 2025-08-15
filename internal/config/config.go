@@ -5,20 +5,17 @@ package config
 import (
 	"os"
 	"path/filepath"
-
 	"gopkg.in/yaml.v3"
 )
 
-// Config represents docker-lint configuration.
+// Config represents docker-lint configuration settings.
 //
-// Config currently supports file-based rule exclusions.
+// Exclusions lists rule IDs that should be skipped during linting.
 type Config struct {
-	Exclude map[string][]string `yaml:"exclude"`
+	Exclusions []string `yaml:"exclusions"`
 }
 
-// Load reads the configuration from the provided path.
-//
-// Load returns an error if the file cannot be read or parsed.
+// Load reads the configuration from the given YAML file path.
 func Load(path string) (*Config, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {

@@ -181,34 +181,28 @@ func TestIntegrationRunDoubleStar(t *testing.T) {
 	}
 }
 
-// TestIntegrationRunConfigExclude verifies that configuration exclusions suppress findings.
-func TestIntegrationRunConfigExclude(t *testing.T) {
+// TestIntegrationRunDefaultConfigExclusions verifies that .docker-lint.yaml exclusions are applied.
+func TestIntegrationRunDefaultConfigExclusions(t *testing.T) {
 	tmp := t.TempDir()
-	badSrc := testDataPath("Dockerfile.bad")
-	badDst := filepath.Join(tmp, "Dockerfile.bad")
-	b, err := os.ReadFile(badSrc)
+	// write Dockerfile
+	src := testDataPath("Dockerfile.bad")
+	df := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(src)
 	if err != nil {
-		t.Fatalf("read: %v", err)
+		t.Fatalf("read dockerfile: %v", err)
 	}
-	if err := os.WriteFile(badDst, b, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
+	if err := os.WriteFile(df, b, 0o644); err != nil {
+		t.Fatalf("write dockerfile: %v", err)
 	}
-	cfgPath := filepath.Join(tmp, ".docker-lint.yaml")
-	cfgSrc := "exclude:\n  Dockerfile.bad:\n    - DL3007\n"
-	if err := os.WriteFile(cfgPath, []byte(cfgSrc), 0o644); err != nil {
+	// write config
+	cfg := []byte("exclusions:\n  - DL3007\n")
+	if err := os.WriteFile(filepath.Join(tmp, ".docker-lint.yaml"), cfg, 0o644); err != nil {
 		t.Fatalf("write config: %v", err)
 	}
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("getwd: %v", err)
-	}
-	defer os.Chdir(wd)
-	if err := os.Chdir(tmp); err != nil {
-		t.Fatalf("chdir: %v", err)
-	}
+	t.Chdir(tmp)
 	var out bytes.Buffer
 	if err := run([]string{"Dockerfile.bad"}, &out, io.Discard, false); err != nil {
-		t.Fatalf("run failed: %v", err)
+		t.Fatalf("run: %v", err)
 	}
 	var findings []engine.Finding
 	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
@@ -218,6 +212,72 @@ func TestIntegrationRunConfigExclude(t *testing.T) {
 		t.Fatalf("expected 1 finding, got %d", len(findings))
 	}
 	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
-		t.Fatalf("expected DL3043, got %s", findings[0].RuleID)
+		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
+	}
+}
+
+// TestIntegrationRunConfigFlagShort verifies that -c config flag applies exclusions.
+func TestIntegrationRunConfigFlagShort(t *testing.T) {
+	tmp := t.TempDir()
+	src := testDataPath("Dockerfile.bad")
+	df := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read dockerfile: %v", err)
+	}
+	if err := os.WriteFile(df, b, 0o644); err != nil {
+		t.Fatalf("write dockerfile: %v", err)
+	}
+	cfgPath := filepath.Join(tmp, "cfg.yaml")
+	cfg := []byte("exclusions:\n  - DL3007\n")
+	if err := os.WriteFile(cfgPath, cfg, 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	var out bytes.Buffer
+	if err := run([]string{"-c", cfgPath, df}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
+		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
+	}
+}
+
+// TestIntegrationRunConfigFlagLong verifies that --config flag applies exclusions.
+func TestIntegrationRunConfigFlagLong(t *testing.T) {
+	tmp := t.TempDir()
+	src := testDataPath("Dockerfile.bad")
+	df := filepath.Join(tmp, "Dockerfile.bad")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read dockerfile: %v", err)
+	}
+	if err := os.WriteFile(df, b, 0o644); err != nil {
+		t.Fatalf("write dockerfile: %v", err)
+	}
+	cfgPath := filepath.Join(tmp, "cfg.yaml")
+	cfg := []byte("exclusions:\n  - DL3007\n")
+	if err := os.WriteFile(cfgPath, cfg, 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	var out bytes.Buffer
+	if err := run([]string{"--config", cfgPath, df}, &out, io.Discard, false); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	var findings []engine.Finding
+	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(findings) != 1 {
+		t.Fatalf("expected 1 finding, got %d", len(findings))
+	}
+	if findings[0].RuleID != rules.NewRequireOSVersionTag().ID() {
+		t.Fatalf("unexpected rule: %s", findings[0].RuleID)
 	}
 }
