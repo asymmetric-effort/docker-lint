@@ -1,0 +1,54 @@
+<!--
+  Copyright (c) 2025 Asymmetric Effort, LLC.
+  Licensed under the MIT License.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Docker Lint</title>
+    <link rel="preload" href="assets/logo-docker-lint.svg" as="image" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header id="banner" role="banner" aria-label="Docker Lint">
+      <div class="banner-inner container">
+        <img src="assets/logo-docker-lint.svg" class="brand-mark" alt="Docker Lint logo" />
+        <h1 class="site-title">Docker Lint</h1>
+      </div>
+      <nav id="top-nav" class="top-nav" aria-label="Primary">
+        <a class="nav-item" href="https://asymmetric-effort.com" rel="noopener" target="_blank">HOME</a>
+        <a class="nav-item" href="https://github.com/asymmetric-effort/docker-lint" rel="noopener" target="_blank">CODE REPO</a>
+      </nav>
+    </header>
+
+    <main id="main" class="layout container" role="main">
+      <aside id="navigator" class="navigator" aria-label="Content Navigator">
+        <div class="nav-header">
+          <img src="assets/logo-docker-lint.svg" class="nav-logo" alt="Docker Lint" />
+        </div>
+        <ul id="nav-list" class="content-navigator" role="listbox" aria-label="Documents">
+          <li><a class="nav-link" data-src="content/README.html" href="content/README.html">README</a></li>
+          <li><a class="nav-link" data-src="content/DL_0001.html" href="content/DL_0001.html">DL_0001</a></li>
+        </ul>
+        <div class="nav-footer">
+          <img src="assets/logo-asymmetric-effort.svg" class="ae-logo" alt="Asymmetric Effort" />
+        </div>
+      </aside>
+
+      <section id="content" class="content-pane" aria-live="polite" aria-busy="false">
+        <article id="content-article" class="prose">
+          <h2>Welcome to Docker Lint</h2>
+          <p>Select a document from the left to view its contents.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer id="site-footer" class="footer container" role="contentinfo">
+      <small>(c) 2025 Asymmetric Effort, LLC. MIT License.</small>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
