@@ -17,6 +17,14 @@ import (
 	"github.com/asymmetric-effort/docker-lint/internal/rules"
 )
 
+// usageText describes the command line usage for the application.
+const usageText = "usage: docker-lint <Dockerfile>"
+
+// printUsage writes the CLI usage information to the provided writer.
+func printUsage(out io.Writer) {
+	fmt.Fprintln(out, usageText)
+}
+
 // main is the CLI entry point.
 func main() {
 	if err := run(os.Args[1:], os.Stdout); err != nil {
@@ -28,7 +36,11 @@ func main() {
 // run executes the linter for the provided arguments and writes JSON findings.
 func run(args []string, out io.Writer) error {
 	if len(args) < 1 {
-		return fmt.Errorf("usage: docker-lint <file or pattern>")
+		return fmt.Errorf(usageText)
+	}
+	if args[0] == "-h" || args[0] == "--help" {
+		printUsage(out)
+		return nil
 	}
 
 	files, err := expandPaths(args)

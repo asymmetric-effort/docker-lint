@@ -58,6 +58,28 @@ func TestIntegrationRunNoArgs(t *testing.T) {
 	}
 }
 
+// TestIntegrationRunHelpShort verifies that run prints usage when the -h flag is provided.
+func TestIntegrationRunHelpShort(t *testing.T) {
+	var out bytes.Buffer
+	if err := run([]string{"-h"}, &out); err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if !strings.Contains(out.String(), "usage: docker-lint") {
+		t.Fatalf("expected usage message, got %q", out.String())
+	}
+}
+
+// TestIntegrationRunHelpLong verifies that run prints usage when the --help flag is provided.
+func TestIntegrationRunHelpLong(t *testing.T) {
+	var out bytes.Buffer
+	if err := run([]string{"--help"}, &out); err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if !strings.Contains(out.String(), "usage: docker-lint") {
+		t.Fatalf("expected usage message, got %q", out.String())
+	}
+}
+
 // TestIntegrationRunMissingFile verifies that run returns an error when the Dockerfile is missing.
 func TestIntegrationRunMissingFile(t *testing.T) {
 	var out bytes.Buffer
