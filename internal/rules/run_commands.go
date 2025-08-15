@@ -49,52 +49,11 @@ func commandNames(tokens []string) []string {
 	return cmds
 }
 
-// splitRunSegments tokenizes a RUN instruction and splits it into command segments.
-// It handles both shell-form and JSON-form RUN instructions.
-func splitRunSegments(n *parser.Node) [][]string {
-	if n == nil || n.Next == nil {
-		return nil
-	}
-	var tokens []string
-	if n.Attributes != nil && n.Attributes["json"] {
-		for tok := n.Next; tok != nil; tok = tok.Next {
-			tokens = append(tokens, tok.Value)
-		}
-	} else {
-		t, err := shlex.Split(n.Next.Value)
-		if err != nil {
-			return nil
-		}
-		tokens = t
-	}
-	var segments [][]string
-	var current []string
-	for _, tok := range tokens {
-		switch tok {
-		case "&&", "||", "|", ";":
-			if len(current) > 0 {
-				segments = append(segments, current)
-				current = nil
-			}
-		default:
-			current = append(current, tok)
-		}
-	}
-	if len(current) > 0 {
-		segments = append(segments, current)
-	}
-	return segments
-}
-
 // lowerSegments returns a lowercase copy of each segment.
 func lowerSegments(segs [][]string) [][]string {
 	out := make([][]string, len(segs))
 	for i, seg := range segs {
-		outSeg := make([]string, len(seg))
-		for j, s := range seg {
-			outSeg[j] = strings.ToLower(s)
-		}
-		out[i] = outSeg
+		out[i] = lowerSlice(seg)
 	}
 	return out
 }
