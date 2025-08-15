@@ -14,6 +14,7 @@ import (
 type Document struct {
 	Filepath string
 	Stages   []*Stage
+	AST      *parser.Node
 }
 
 // Stage represents a single FROM instruction.
@@ -30,7 +31,7 @@ type Stage struct {
 //
 // BuildDocument iterates the AST, collecting FROM instructions as stages.
 func BuildDocument(path string, ast *parser.Node) (*Document, error) {
-	doc := &Document{Filepath: path}
+	doc := &Document{Filepath: path, AST: ast}
 	idx := 0
 	for _, n := range ast.Children {
 		if strings.EqualFold(n.Value, "from") {
