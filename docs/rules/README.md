@@ -34,7 +34,7 @@ The following Hadolint-compatible rules are implemented:
 - [DL3048](DL3048.md) - Invalid Label Key
 
 
-- [DL3050](dl3050.md) - Superfluous label(s) present.
+- [DL3050](DL3050.md) - Superfluous label(s) present.
 
 - [DL3060](DL3060.md) - `yarn cache clean` missing after `yarn install`.
 

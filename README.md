@@ -39,7 +39,7 @@ docker run --rm -v "$(pwd):/src" ghcr.io/asymmetric-effort/docker-lint:latest /s
 
 ## Rules
 
-- [DL3050](docs/rules/dl3050.md) - Superfluous label(s) present when strict label validation is enabled.
+- [DL3050](docs/rules/DL3050.md) - Superfluous label(s) present when strict label validation is enabled.
 
 ## Development
 
