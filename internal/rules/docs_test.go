@@ -3,8 +3,8 @@
 package rules
 
 import (
-	"fmt"
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
