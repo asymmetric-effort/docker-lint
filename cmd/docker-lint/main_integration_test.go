@@ -26,11 +26,18 @@ func TestIntegrationRunDetectsLatest(t *testing.T) {
 	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("expected 1 finding, got %d", len(findings))
+	if len(findings) != 2 {
+		t.Fatalf("expected 2 findings, got %d", len(findings))
 	}
-	if findings[0].RuleID != rules.NewNoLatestTag().ID() {
-		t.Fatalf("unexpected rule id: %s", findings[0].RuleID)
+	ids := map[string]struct{}{}
+	for _, f := range findings {
+		ids[f.RuleID] = struct{}{}
+	}
+	if _, ok := ids[rules.NewNoLatestTag().ID()]; !ok {
+		t.Fatalf("missing DL3007 finding")
+	}
+	if _, ok := ids[rules.NewRequireOSVersionTag().ID()]; !ok {
+		t.Fatalf("missing DL3043 finding")
 	}
 }
 
@@ -131,8 +138,8 @@ func TestIntegrationRunGlob(t *testing.T) {
 	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("expected 1 finding, got %d", len(findings))
+	if len(findings) != 2 {
+		t.Fatalf("expected 2 findings, got %d", len(findings))
 	}
 }
 
@@ -168,7 +175,7 @@ func TestIntegrationRunDoubleStar(t *testing.T) {
 	if err := json.Unmarshal(out.Bytes(), &findings); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}
-	if len(findings) != 2 {
-		t.Fatalf("expected 2 findings, got %d", len(findings))
+	if len(findings) != 4 {
+		t.Fatalf("expected 4 findings, got %d", len(findings))
 	}
 }
