@@ -37,6 +37,10 @@ docker-lint is also published as a container image. This allows you to lint Dock
 docker run --rm -v "$(pwd):/src" ghcr.io/asymmetric-effort/docker-lint:latest /src/Dockerfile
 ```
 
+## Rules
+
+- [DL3050](docs/rules/dl3050.md) - Superfluous label(s) present when strict label validation is enabled.
+
 ## Development
 
 Common tasks can be run using [`make`](Makefile):
