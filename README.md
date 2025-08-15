@@ -28,6 +28,14 @@ Example output:
 ]
 ```
 
+## Linting Containers
+
+docker-lint is also published as a container image. This allows you to lint Dockerfiles without installing the binary on your host system. Mount your project directory and provide the Dockerfile path inside the container:
+
+```bash
+docker run --rm -v "$(pwd):/src" ghcr.io/asymmetric-effort/docker-lint:latest /src/Dockerfile
+```
+
 ## Development
 
 Common tasks can be run using [`make`](Makefile):
