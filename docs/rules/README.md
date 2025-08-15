@@ -65,3 +65,6 @@ The following Hadolint-compatible rules are implemented:
 - [DL4004](DL4004.md) - Multiple ENTRYPOINT instructions
 - [DL4005](DL4005.md) - Use SHELL to change the default shell
 - [DL4006](DL4006.md) - Set the SHELL option -o pipefail before RUN with a pipe in it
+
+(c) 2025 Asymmetric Effort, LLC. <scaldwell@asymmetric-effort.com>
+[<img src="../img/asymmetric-effort.png" alt="Asymmetric Effort logo" width="60" height="60">](https://asymmetric-effort.com/)
