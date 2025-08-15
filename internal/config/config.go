@@ -10,11 +10,27 @@ import (
 
 // Config represents docker-lint configuration settings.
 //
-// Exclusions lists rule IDs that should be skipped globally during linting.
-// Exclude maps filenames to rule IDs that should be skipped for specific files.
+// The structure matches the configuration options used by hadolint so that
+// users can reuse existing `.hadolint.yaml` files. Only a subset of hadolint's
+// options are currently consumed by docker-lint.
 type Config struct {
-	Exclusions []string            `yaml:"exclusions"`
-	Exclude    map[string][]string `yaml:"exclude"`
+	// Ignored lists rule IDs that should be skipped globally during linting.
+	Ignored []string `yaml:"ignored"`
+
+	// Override remaps rule IDs to a severity level, keyed by that level.
+	Override map[string][]string `yaml:"override"`
+
+	// FailureThreshold defines the minimum severity that causes a failure.
+	FailureThreshold string `yaml:"failure-threshold"`
+
+	// TrustedRegistries specifies registries considered secure for FROM instructions.
+	TrustedRegistries []string `yaml:"trustedRegistries"`
+
+	// StrictLabels toggles enforcement of a configured label schema.
+	StrictLabels bool `yaml:"strict-labels"`
+
+	// LabelSchema maps required label keys to a description or type.
+	LabelSchema map[string]string `yaml:"label-schema"`
 }
 
 // Load reads the configuration from the given YAML file path.
@@ -30,17 +46,12 @@ func Load(path string) (*Config, error) {
 	return &cfg, nil
 }
 
-// IsRuleExcluded reports whether the given rule is excluded for the file.
-func (c *Config) IsRuleExcluded(path, rule string) bool {
+// IsIgnored reports whether the given rule ID is globally ignored.
+func (c *Config) IsIgnored(rule string) bool {
 	if c == nil {
 		return false
 	}
-	base := filepath.Base(path)
-	rules, ok := c.Exclude[base]
-	if !ok {
-		return false
-	}
-	for _, r := range rules {
+	for _, r := range c.Ignored {
 		if r == rule {
 			return true
 		}
