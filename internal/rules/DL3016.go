@@ -9,9 +9,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/google/shlex"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
-
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
 )
@@ -94,54 +91,18 @@ func npmInstallPackages(tokens []string) []string {
 	return packages
 }
 
-// splitRunSegments tokenizes a RUN node and splits it into command segments.
-func splitRunSegments(n *parser.Node) [][]string {
-	if n == nil || n.Next == nil {
-		return nil
-	}
-	var tokens []string
-	if n.Attributes != nil && n.Attributes["json"] {
-		for tok := n.Next; tok != nil; tok = tok.Next {
-			tokens = append(tokens, tok.Value)
-		}
-	} else {
-		t, err := shlex.Split(n.Next.Value)
-		if err != nil {
-			return nil
-		}
-		tokens = t
-	}
-	var segments [][]string
-	var current []string
-	for _, tok := range tokens {
-		switch tok {
-		case "&&", "||", "|", ";":
-			if len(current) > 0 {
-				segments = append(segments, current)
-				current = nil
-			}
-		default:
-			current = append(current, tok)
-		}
-	}
-	if len(current) > 0 {
-		segments = append(segments, current)
-	}
-	return segments
-}
-
 // allVersionFixed returns true if all packages specify a version, tag, or commit.
 func allVersionFixed(pkgs []string) bool {
 	for _, p := range pkgs {
-		if !versionFixed(p) {
+		if !npmVersionFixed(p) {
 			return false
 		}
 	}
 	return true
 }
 
-// versionFixed determines if a package argument is pinned to a version.
-func versionFixed(pkg string) bool {
+// npmVersionFixed determines if a package argument is pinned to a version.
+func npmVersionFixed(pkg string) bool {
 	if hasGitPrefix(pkg) {
 		return isVersionedGit(pkg)
 	}

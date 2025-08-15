@@ -11,8 +11,6 @@ import (
 
 	"github.com/asymmetric-effort/docker-lint/internal/engine"
 	"github.com/asymmetric-effort/docker-lint/internal/ir"
-	"github.com/google/shlex"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
 )
 
 // aptListsCleanup ensures apt installs remove package lists in the same layer.
@@ -34,7 +32,7 @@ func (aptListsCleanup) Check(ctx context.Context, d *ir.Document) ([]engine.Find
 		if !strings.EqualFold(n.Value, "run") {
 			continue
 		}
-		segments := splitRunSegments(n)
+		segments := lowerSegments(splitRunSegments(n))
 		if needsAptListsCleanup(segments) {
 			findings = append(findings, engine.Finding{
 				RuleID:  "DL3009",
@@ -44,46 +42,6 @@ func (aptListsCleanup) Check(ctx context.Context, d *ir.Document) ([]engine.Find
 		}
 	}
 	return findings, nil
-}
-
-// splitRunSegments splits a RUN instruction into command segments separated by shell connectors.
-func splitRunSegments(n *parser.Node) [][]string {
-	if n == nil || n.Next == nil {
-		return nil
-	}
-	if n.Attributes != nil && n.Attributes["json"] {
-		return [][]string{{strings.ToLower(n.Next.Value)}}
-	}
-	tokens, err := shlex.Split(n.Next.Value)
-	if err != nil {
-		return nil
-	}
-	var segs [][]string
-	var cur []string
-	for _, tok := range tokens {
-		switch tok {
-		case "&&", "||", ";", "|":
-			if len(cur) > 0 {
-				segs = append(segs, lowerSlice(cur))
-				cur = nil
-			}
-		default:
-			cur = append(cur, tok)
-		}
-	}
-	if len(cur) > 0 {
-		segs = append(segs, lowerSlice(cur))
-	}
-	return segs
-}
-
-// lowerSlice returns a new slice with all elements lowercased.
-func lowerSlice(in []string) []string {
-	out := make([]string, len(in))
-	for i, s := range in {
-		out[i] = strings.ToLower(s)
-	}
-	return out
 }
 
 // needsAptListsCleanup reports whether an apt install occurred without subsequent cleanup.
