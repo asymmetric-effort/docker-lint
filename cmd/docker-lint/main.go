@@ -50,6 +50,7 @@ func run(args []string, out io.Writer) error {
 
 	reg := engine.NewRegistry()
 	reg.Register(rules.NewNoLatestTag())
+	reg.Register(rules.NewAptNoInstallRecommends())
 
 	ctx := context.Background()
 	var all []engine.Finding
