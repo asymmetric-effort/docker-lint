@@ -1,11 +1,11 @@
 module github.com/asymmetric-effort/docker-lint
 
-go 1.24
+go 1.24.0
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.9.1
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
-	github.com/moby/buildkit v0.23.2
+	github.com/moby/buildkit v0.25.1
 	github.com/sam-caldwell/ansi v1.0.3
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -16,5 +16,5 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/sam-caldwell/exit v1.0.3 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
+	google.golang.org/protobuf v1.36.9 // indirect
 )
